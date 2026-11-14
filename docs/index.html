@@ -4,11 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>jing-lecture-skills · 一份内容做成三份产物</title>
+<link rel="icon" href="img/jing-mark.png">
+<meta name="description" content="晶雕细琢 · 把一份内容做成三份互相咬合的产物：可投屏 slides、可分享材料、讲者讲稿。">
+<meta name="author" content="晶雕细琢">
 <style>
 :root{
-  --paper:#fcfbf8; --card:#fffdf9; --ink:#17150f; --ink2:#3d3830;
-  --muted:#5f584c; --line:#b9ab92; --line-soft:#ece4d8;
-  --accent:#9c2f1e; --accent-soft:#f2e3dd;
+  --paper:#FBF5EE; --card:#fffdf9; --ink:#262626; --ink2:#3d3830;
+  --muted:#5f584c; --line:#c9b6a0; --line-soft:#e8dccd;
+  --accent:#2C9EA3; --accent-soft:#e3f1f1;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -24,7 +27,12 @@ code,pre{font-family:"SF Mono",Menlo,Consolas,monospace}
   display:flex;align-items:baseline;justify-content:space-between;gap:16px;
   padding:28px 0 0;font-size:.82rem;letter-spacing:.02em;color:var(--muted);
 }
-.top b{color:var(--ink);font-weight:600;letter-spacing:.04em}
+.brand{display:flex;align-items:center;gap:11px}
+.brand img{width:46px;height:46px;display:block}
+.brand .bt{display:flex;flex-direction:column;line-height:1.3}
+.brand .bt b{font-size:1.02rem;letter-spacing:.12em;font-weight:600}
+.brand .bt i{font-style:normal;font-size:.72rem;color:var(--muted);letter-spacing:.03em}
+
 .top a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-soft)}
 .top a:hover{color:var(--accent);border-color:var(--accent)}
 
@@ -74,11 +82,11 @@ h2 small{font-weight:400;font-size:.8rem;color:var(--muted);margin-left:10px;let
 .shot img{width:100%;height:auto;display:block}
 .shot figcaption{font-size:.84rem;color:var(--muted);display:flex;justify-content:space-between;gap:16px}
 .shot figcaption b{color:var(--ink);font-weight:600}
-.shot figcaption a{color:var(--accent);text-decoration:none;border-bottom:1px dotted rgba(156,47,30,.5);white-space:nowrap}
+.shot figcaption a{color:var(--accent);text-decoration:none;border-bottom:1px dotted rgba(44,158,163,.55);white-space:nowrap}
 
 /* 代码 */
 pre{
-  background:#f6f2eb;border-left:3px solid var(--accent);
+  background:#f4ede3;border-left:3px solid var(--accent);
   padding:16px 18px;overflow-x:auto;font-size:.83rem;line-height:1.7;
   color:var(--ink2);margin:18px 0 0;border-radius:0 3px 3px 0;
 }
@@ -99,6 +107,8 @@ th{color:var(--muted);font-weight:500;font-size:.8rem;letter-spacing:.04em}
 td:first-child{white-space:nowrap;color:var(--ink)}
 
 /* 页脚 */
+.fbrand{display:inline-flex;align-items:center;gap:8px}
+.fbrand img{width:24px;height:24px;display:block}
 footer{margin-top:80px;padding-top:22px;border-top:1px solid var(--line-soft);font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-soft)}
 footer a:hover{color:var(--accent)}
@@ -116,7 +126,10 @@ footer a:hover{color:var(--accent)}
 <div class="wrap">
 
   <div class="top">
-    <b>jing-lecture-skills</b>
+    <div class="brand">
+      <img src="img/jing-avatar.png" alt="晶雕细琢">
+      <span class="bt"><b>晶雕细琢</b><i>从复杂中找关键，把问题讲清楚</i></span>
+    </div>
     <a href="https://github.com/crystalyj37/jing-lecture-skills">GitHub ↗</a>
   </div>
 
@@ -199,7 +212,7 @@ python3 lecture-pack/scripts/crosscheck.py content-map.md handout.md script.md t
 cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.workbuddy/skills/</pre>
 
   <footer>
-    <span>MIT · 内容示例为通用科普，与任何机构无关</span>
+    <span class="fbrand"><img src="img/jing-mark.png" alt="">MIT · 内容示例为通用科普，与任何机构无关</span>
     <span><a href="https://github.com/crystalyj37/jing-lecture-skills">源码</a> · <a href="https://github.com/crystalyj37/jing-lecture-skills/blob/main/lecture-slides/README.md">slides 文档</a> · <a href="https://github.com/crystalyj37/jing-lecture-skills/blob/main/lecture-pack/README.md">pack 文档</a></span>
   </footer>
 
