@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jing-lecture-skills · 一份内容做成三份产物</title>
+<style>
+:root{
+  --paper:#fcfbf8; --card:#fffdf9; --ink:#17150f; --ink2:#3d3830;
+  --muted:#5f584c; --line:#b9ab92; --line-soft:#ece4d8;
+  --accent:#9c2f1e; --accent-soft:#f2e3dd;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 28px 96px}
+code,pre{font-family:"SF Mono",Menlo,Consolas,monospace}
+
+/* 顶栏 */
+.top{
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:28px 0 0;font-size:.82rem;letter-spacing:.02em;color:var(--muted);
+}
+.top b{color:var(--ink);font-weight:600;letter-spacing:.04em}
+.top a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-soft)}
+.top a:hover{color:var(--accent);border-color:var(--accent)}
+
+/* 头部 */
+header{padding:64px 0 40px;border-bottom:1px solid var(--line-soft)}
+.kicker{
+  font-size:.72rem;letter-spacing:.28em;color:var(--accent);
+  text-transform:uppercase;margin-bottom:20px;
+}
+h1{
+  margin:0 0 22px;font-size:clamp(30px,4.6vw,46px);line-height:1.28;
+  font-weight:600;letter-spacing:-.01em;
+}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{max-width:40em;margin:0;font-size:1.06rem;color:var(--ink2)}
+.lede b{font-weight:600;color:var(--ink)}
+
+/* 两张卡 */
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:48px 0 8px}
+.skill{
+  background:var(--card);border:1px solid var(--line-soft);border-radius:4px;
+  padding:24px 24px 20px;
+}
+.skill h3{margin:0 0 6px;font-size:1.06rem;font-weight:600}
+.skill h3 span{
+  display:inline-block;font:600 .68rem/1 "SF Mono",Menlo,monospace;
+  color:var(--accent);background:var(--accent-soft);
+  padding:4px 7px;border-radius:2px;margin-right:9px;vertical-align:2px;
+}
+.skill p{margin:8px 0 0;font-size:.9rem;color:var(--muted)}
+.skill dl{display:grid;grid-template-columns:3.2em 1fr;gap:2px 10px;margin:14px 0 0;font-size:.82rem}
+.skill dt{color:var(--line);letter-spacing:.06em}
+.skill dd{margin:0;color:var(--ink2)}
+
+/* 小节 */
+h2{
+  margin:72px 0 8px;font-size:1.28rem;font-weight:600;letter-spacing:.01em;
+  padding-bottom:10px;border-bottom:1px solid var(--line);
+}
+h2 small{font-weight:400;font-size:.8rem;color:var(--muted);margin-left:10px;letter-spacing:.02em}
+.note{margin:14px 0 0;font-size:.9rem;color:var(--muted)}
+
+/* 效果图 */
+.shots{display:grid;gap:34px;margin-top:28px}
+.shot{display:grid;grid-template-columns:1fr;gap:12px}
+.shot a{display:block;line-height:0;border:1px solid var(--line-soft);background:#fff;border-radius:3px;overflow:hidden}
+.shot img{width:100%;height:auto;display:block}
+.shot figcaption{font-size:.84rem;color:var(--muted);display:flex;justify-content:space-between;gap:16px}
+.shot figcaption b{color:var(--ink);font-weight:600}
+.shot figcaption a{color:var(--accent);text-decoration:none;border-bottom:1px dotted rgba(156,47,30,.5);white-space:nowrap}
+
+/* 代码 */
+pre{
+  background:#f6f2eb;border-left:3px solid var(--accent);
+  padding:16px 18px;overflow-x:auto;font-size:.83rem;line-height:1.7;
+  color:var(--ink2);margin:18px 0 0;border-radius:0 3px 3px 0;
+}
+pre .c{color:#8a8175}
+
+/* 提示块 */
+.callout{
+  margin-top:22px;padding:16px 20px;background:var(--card);
+  border:1px solid var(--line-soft);border-left:3px solid var(--line);
+  font-size:.9rem;color:var(--ink2);
+}
+.callout b{font-weight:600}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:.88rem}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:.8rem;letter-spacing:.04em}
+td:first-child{white-space:nowrap;color:var(--ink)}
+
+/* 页脚 */
+footer{margin-top:80px;padding-top:22px;border-top:1px solid var(--line-soft);font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line-soft)}
+footer a:hover{color:var(--accent)}
+
+@media (max-width:720px){
+  .wrap{padding:0 20px 64px}
+  header{padding:40px 0 28px}
+  .skills{grid-template-columns:1fr;gap:14px}
+  h2{margin-top:52px}
+  .shot figcaption{flex-direction:column;gap:4px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <b>jing-lecture-skills</b>
+    <a href="https://github.com/crystalyj37/jing-lecture-skills">GitHub ↗</a>
+  </div>
+
+  <header>
+    <div class="kicker">Lecture toolkit</div>
+    <h1>一份内容，<em>三份</em>互相咬合的产物</h1>
+    <p class="lede">同一份东西，讲的时候要能一屏一屏出，听完要能带走一份读得懂的，讲的人自己还要有一份只给自己看的。<b>两套 skill，一条流水线</b>：内容只写一遍，三份各自成形，再用机械对账确认它们说的是同一件事。</p>
+  </header>
+
+  <div class="skills">
+    <div class="skill">
+      <h3><span>01</span>lecture-slides</h3>
+      <p>把 <code>.deck.md</code> 渲染成单文件 HTML 演示页。</p>
+      <dl>
+        <dt>输入</dt><dd>markdown + 屏内 HTML</dd>
+        <dt>输出</dt><dd>一个 html，离线可开</dd>
+        <dt>要点</dt><dd>空格分步 · <code>S</code> 备注 · <code>R</code> 阅读模式</dd>
+      </dl>
+    </div>
+    <div class="skill">
+      <h3><span>02</span>lecture-pack</h3>
+      <p>把同一议题写成材料 + slides + 讲稿，再对账。</p>
+      <dl>
+        <dt>输入</dt><dd>内容清单 + 两份 md</dd>
+        <dt>输出</dt><dd>三份产物 + 一份核对报告</dd>
+        <dt>要点</dt><dd>单元、顺序、数字三份一致</dd>
+      </dl>
+    </div>
+  </div>
+
+  <h2>效果<small>都是下面这份示例稿跑出来的</small></h2>
+  <p class="note">示例主题是「模型分几类」，一份 90 分钟分享里的两屏。slides、材料、讲稿用的是同一份内容。</p>
+
+  <div class="shots">
+    <figure class="shot" style="margin:0">
+      <a href="deck.html"><img src="img/deck.png" alt="slides 示例：模型分类表，六行分步出现"></a>
+      <figcaption><span><b>可投屏 slides</b> · 按空格一行一行出，底部有进度</span><a href="deck.html">打开交互版 →</a></figcaption>
+    </figure>
+
+    <figure class="shot" style="margin:0">
+      <a href="handout.pdf"><img src="img/handout.png" alt="A4 材料示例：标题、目录、表格"></a>
+      <figcaption><span><b>A4 材料</b> · 给听众读的，带目录、表头、页码</span><a href="handout.pdf">看 PDF →</a></figcaption>
+    </figure>
+
+    <figure class="shot" style="margin:0">
+      <a href="script.pdf"><img src="img/script.png" alt="A4 讲稿示例：口播句与时间标记"></a>
+      <figcaption><span><b>A4 讲稿</b> · 只给讲者，口播句 + 时间 + 现场提示</span><a href="script.pdf">看 PDF →</a></figcaption>
+    </figure>
+  </div>
+
+  <h2>三份怎么分工</h2>
+  <table>
+    <thead><tr><th>产物</th><th>给谁</th><th>承担什么</th><th>不该放什么</th></tr></thead>
+    <tbody>
+      <tr><td>slides</td><td>台下的人</td><td>一屏一个判断，字少、看得清</td><td>整段论述、参考文献</td></tr>
+      <tr><td>材料</td><td>带走的人</td><td>能独立读懂，有细节和出处</td><td>口播语气、现场指令</td></tr>
+      <tr><td>讲稿</td><td>只有讲者</td><td>口播原句、时间、哪里停</td><td>长篇背景（那是材料的事）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>跑一遍</h2>
+<pre><span class="c"># slides</span>
+python3 lecture-slides/scripts/build.py talk.deck.md -o talk.html
+python3 lecture-slides/scripts/audit.py talk.html
+
+<span class="c"># 材料与讲稿</span>
+python3 lecture-pack/scripts/handout.py handout.md -o handout.html --title "示例分享"
+python3 lecture-pack/scripts/script.py  script.md  -o script.html
+
+<span class="c"># 对账：单元、顺序、数字是否三份一致</span>
+python3 lecture-pack/scripts/crosscheck.py content-map.md handout.md script.md talk.deck.md</pre>
+
+  <div class="callout">
+    <b>为什么不用现成的幻灯片工具。</b>PowerPoint 和各类网页 slides 框架都把内容和版式绑在一起：内容改一句，版式要跟着调；三份产物更是各写各的，改一处就得记着另外两处。这里把「内容」「结构标记」「版式」拆开——改内容不碰 CSS，改 CSS 不动内容。
+  </div>
+
+  <h2>依赖</h2>
+  <p class="note">只有 Python 3 标准库。两个目录必须并排放在同一个父目录下——<code>lecture-pack</code> 要读 <code>../lecture-slides/assets/tokens.css</code> 取配色表。</p>
+<pre>git clone https://github.com/crystalyj37/jing-lecture-skills.git
+cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.workbuddy/skills/</pre>
+
+  <footer>
+    <span>MIT · 内容示例为通用科普，与任何机构无关</span>
+    <span><a href="https://github.com/crystalyj37/jing-lecture-skills">源码</a> · <a href="https://github.com/crystalyj37/jing-lecture-skills/blob/main/lecture-slides/README.md">slides 文档</a> · <a href="https://github.com/crystalyj37/jing-lecture-skills/blob/main/lecture-pack/README.md">pack 文档</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

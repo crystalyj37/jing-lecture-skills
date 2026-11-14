@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>示例材料</title>
+<style>
+/* ============================================================
+   墨水经典 · 唯一主题（配色事实源）
+   ------------------------------------------------------------
+   三份产物都从这张表取色：
+     · 投屏 slides   build.py    把本文件整段注入 deck-shell.html
+     · A4 材料       handout.py  同上注入，再用别名把 --paper 指到 --paper-print
+     · A4 讲稿       script.py   同上注入，--paper 指到 --paper-script
+   所以：改颜色只改这里，三份一起变，不会各自漂。
+
+   两条使用规则：
+     1. 新颜色先进这张表，组件里只写 var()。判据是「换一套配色时它该不该跟着变」。
+     2. 「仪器」不在这张表里：底部工具条、目录遮罩、备注面板、黑场，
+        它们恒为暗色，属于放映设备而不是版面，见 README「仪器色」。
+
+   纸面只有一档 #fcfbf8，三份产物同纸。下面 --paper-print / --paper-script
+   是历史遗留的接入点（值已统一），留着是为了两份 A4 的别名块不必改动；
+   将来真要分开，只改这两个值即可。
+   ============================================================ */
+:root{
+  /* ---------- 纸面：由白到暖，按层用 ---------- */
+  --paper:#fcfbf8;            /* 投屏屏幕底 */
+  --paper-print:#fcfbf8;      /* A4 材料纸面（已与投屏统一） */
+  --paper-script:#fcfbf8;     /* A4 讲稿纸面（已与投屏统一） */
+  --paper-card:#fffdf9;       /* 卡片、翻面、对照右栏 */
+  --paper-soft:#f6f2eb;       /* 收缩态左栏、时间轴休息段 */
+  --paper-soft-2:#f2ece2;     /* 更弱一档：阅读模式目录条、表头 */
+  --paper-0:#fff;             /* 纯白：点色上的字、图里的纸、打印底 */
+  --card:#fff;                /* 卡片底（与 --paper-0 同值，角色不同：卡比纸更亮） */
+  --gutter:#e9e5dc;           /* 屏上预览时页面外的“桌面”，打印不出现 */
+
+  /* ---------- 墨：正文 → 次级 → 弱 → 水印 ---------- */
+  --ink:#17150f;              /* 投屏正文 */
+  --ink-print:#1a1815;        /* A4 正文（两版共用） */
+  --ink-strong:#0f0d0a;       /* 加粗，比正文再深一档 */
+  --ink2:#3d3830;             /* 投屏次级正文 */
+  --ink2-print:#3d3830;       /* 材料次级（与投屏同值，留名是为了别名不自我循环） */
+  --ink2-script:#39342c;      /* 讲稿次级 */
+  --muted:#5f584c;            /* 投屏弱字 */
+  --muted-print:#6b6459;      /* 材料弱字 */
+  --muted-script:#7a7266;     /* 讲稿弱字 */
+  --muted-2:#6f6656;          /* 提示语、翻面提示 */
+  --ghost:#8f8168;            /* 序号水印 */
+  --ghost-lt:#a99b83;         /* 更浅的水印 */
+
+  /* ---------- 线 ---------- */
+  --line:#b9ab92;             /* 投屏分隔线（比纸深一档，投影才看得见） */
+  --line-print:#ddd5c6;       /* 材料分隔线 */
+  --line-script:#ded6c7;      /* 讲稿分隔线 */
+  --line-card:#e8dccb;        /* 卡片描边 */
+  --line-soft:#ece4d8;        /* 块内网格 */
+
+  /* ---------- 点色：全库唯一强调色 ---------- */
+  --accent:#9c2f1e;           /* 朱红 */
+  --accent-soft:#f2e3dd;      /* 强调底 */
+  --accent-wash:rgba(156,47,30,.32); /* 强调色 32% 线 */
+  --accent-line:rgba(156,47,30,.3); /* 材料：链接下边线 */
+  --accent-dot:rgba(156,47,30,.55);  /* 材料：打印后链接的点线 */
+  --green:#2b5448;            /* 第二点色，只用于对照里“对/好”那一侧 */
+
+  /* ---------- 代码 / 旁注 / 表头 ---------- */
+  --code:#f2eee6;
+  --code-script:#f4f0e8;
+  --cue-bg:#f1ece1;
+  --cue-ink:#6a6053;
+  --cue-line:#c9bda6;
+  --th-bg:#f6f2ea;            /* 材料表头 */
+  --th-bg-script:#f7f3ea;     /* 讲稿表头（与 --toc-bg 同值） */
+  --toc-bg:#f7f3eb;           /* 材料目录框 */
+  --black:#000;               /* 讲稿打印：正文纯黑，不用墨色 */
+  --mark-print:#8a8378;       /* 材料页眉/页码（@page 里取字面值，不走 var） */
+  --mark-script:#9a9286;      /* 讲稿页眉/页码 */
+
+  /* ---------- 版面局部：图示线、二维码卡、视频占位 ----------
+     这些是纸面上的暖白/棕线，换纸色时一起看；平时不用动。 */
+  --fig-soft:#c9bfae;         /* 图示：虚线、弱轮廓 */
+  --fig-lead:#8a7c63;         /* 图示：引线 */
+  --fig-brain:#f2ded7;        /* 图示：强调块填充 */
+  --fig-ground:#cfc4b1;       /* 图示：地面虚线 */
+  --qr-line:#d9cbb2;          /* 二维码卡：描边 */
+  --qr-line-2:#ddcfb6;        /* 二维码框：描边（浅一档） */
+  --qr-paper:#f1e8d8;         /* 二维码框：底 */
+  --qr-foot:#e3d8c5;          /* 二维码卡：脚注线 */
+  --tint-1:#e8ddc9;           /* 四格卡：大序号水印 */
+  --tint-2:#f7f3ea;           /* 视频缺片占位底 */
+  --video-bg:#0d0c0a;         /* 视频容器底（暗） */
+}
+
+/* 不在这张表里的，是「仪器色」：底部工具条、帮助/目录遮罩、备注面板、黑场。
+   它们恒为暗色，属于放映设备而不是版面，随设备走不随主题走。
+   位置：deck-shell.html 里 .bar / .overlay / #spk / .black / html.bo 各段。 */
+/* 产品别名：通用角色 → A4 材料那一档纸墨（配色表在 lecture-slides/assets/tokens.css） */
+:root{
+  --ink:var(--ink-print); --ink2:var(--ink2-print); --muted:var(--muted-print);
+  --paper:var(--paper-print); --line:var(--line-print);
+}
+*{box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{
+  margin:0;padding:0;background:var(--gutter);color:var(--ink);
+  font-family:"Songti SC","Source Han Serif SC","Noto Serif SC","PingFang SC",
+    "Hiragino Sans GB","Microsoft YaHei",serif;
+  line-height:1.92;
+}
+.page{
+  max-width:760px;margin:0 auto;background:var(--paper);
+  padding:64px 72px 96px;box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+h1{font-size:1.95rem;line-height:1.35;margin:0 0 .4em;letter-spacing:-.01em}
+h2{font-size:1.42rem;line-height:1.45;margin:2.6em 0 .8em;padding-bottom:.32em;
+   border-bottom:1px solid var(--line)}
+h3{font-size:1.12rem;margin:2em 0 .6em}
+h4{font-size:1rem;margin:1.6em 0 .5em;color:var(--ink2)}
+p{margin:0 0 1.05em;text-align:justify;text-justify:inter-ideograph}
+p,li,td,th,blockquote{overflow-wrap:anywhere}
+.brk{word-break:break-all}   /* 超长 ASCII 串允许从任意处断开，避免整行被拉开 */   /* 长网址/长英文串不顶出边界 */
+ul,ol{margin:0 0 1.1em;padding-left:1.6em}
+li{margin:.3em 0}
+strong{font-weight:700;color:var(--ink-strong)}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-line)}
+a:hover{border-bottom-color:var(--accent)}
+code{background:var(--code);padding:.12em .38em;border-radius:3px;
+     font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+pre{background:var(--code);padding:16px 18px;border-radius:6px;overflow-x:auto;
+    font-size:.88rem;line-height:1.65;margin:0 0 1.2em}
+pre code{background:none;padding:0}
+blockquote{margin:1.2em 0;padding:.2em 0 .2em 1.1em;border-left:3px solid var(--accent);
+           color:var(--ink2)}
+blockquote p{margin:.45em 0}
+hr{border:0;border-top:1px solid var(--line);margin:2.4em 0}
+table{border-collapse:collapse;width:100%;margin:1.2em 0 1.6em;font-size:.92rem;
+      line-height:1.6;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.tw{margin:1.2em 0 1.6em;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tw table{margin:0}
+th,td{border-bottom:1px solid var(--line);padding:.55em .7em;text-align:left;vertical-align:top}
+th{background:var(--th-bg);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:1px solid var(--line)}
+img{max-width:100%;height:auto;display:block;margin:1.4em auto;border-radius:4px}
+
+.toc{background:var(--toc-bg);border:1px solid var(--line);border-radius:8px;
+     padding:22px 26px;margin:2.2em 0 2.8em;font-family:"PingFang SC","Hiragino Sans GB",sans-serif}
+.toc .tt{font-size:.78rem;letter-spacing:.16em;color:var(--muted);margin-bottom:.8em}
+.toc a{display:block;padding:.18em 0;border:0;color:var(--ink2);font-size:.94rem}
+.toc a.lv3{padding-left:1.3em;font-size:.88rem;color:var(--muted)}
+.meta{font-size:.86rem;color:var(--muted);font-family:"PingFang SC","Hiragino Sans GB",sans-serif;
+      margin-bottom:2.2em;padding-bottom:1.4em;border-bottom:1px solid var(--line)}
+.math{font-family:"Times New Roman",serif;font-style:italic}
+
+@media print{
+  body{background:var(--paper-0);font-size:10.5pt;line-height:1.85}
+  .page{box-shadow:none;max-width:none;padding:0}
+  h1{font-size:18pt}
+  h2{font-size:13.5pt;break-after:avoid}
+  h3{font-size:11.5pt;break-after:avoid}
+  h1,h2,h3,h4{break-inside:avoid}
+  p{orphans:3;widows:3}
+  pre,blockquote,img{break-inside:avoid}
+  thead{display:table-header-group}
+  tr{break-inside:avoid}
+  .tw{overflow:visible;margin:1.2em 0 1.6em}
+  table{width:100%;max-width:100%;table-layout:auto}
+  .toc{break-inside:avoid}
+  a{color:inherit;border:0;text-decoration:none}
+  /* 打印后链接仍可点（Chrome 会把 <a> 写成 PDF 注释），但默认色被抹平后
+     读者看不出哪里能点。给外链/邮箱留一条极细点线 + 强调色，可点性不变。 */
+  a[href^="http"]{color:var(--accent);border-bottom:1px dotted var(--accent-dot)}
+  a[href^="mailto"]{color:var(--accent);border-bottom:1px dotted var(--accent-dot)}
+  .toc a,.toc a.lv3{color:inherit;border:0}
+}
+@media (max-width:640px){
+  .page{padding:32px 22px 56px}
+  h1{font-size:1.55rem}
+  h2{font-size:1.24rem}
+  table{font-size:.86rem}
+  th,td{padding:.45em .5em}
+}
+
+@page{size:A4;margin:20mm 18mm 20mm;
+font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+@page{@top-right{content:"示例材料";font-size:8pt;color:#8a8378}}
+@page:first{@top-right{content:none}}
+@page{@bottom-center{content:counter(page) " / " counter(pages);font-size:8.5pt;color:#8a8378}}</style>
+</head>
+<body>
+<main class="page">
+<h1 id="h1-0">模型不是一个：先把这一刀分开</h1>
+<blockquote><p>本文配合「示例分享」现场整理整理，对应第 11–12 页。没到场也能独立阅读。</p><p>全文约 1100 字，读完约 4 分钟。</p></blockquote>
+<p>如果你曾经觉得「这个 AI 有时候挺聪明，有时候又很蠢」，问题多半不在它聪不聪明：<strong>你比较的可能是几个不同的模型。</strong></p>
+<div class="toc"><div class="tt">目 录</div>
+<a class="lv2" href="#h2-0">U2.0 · 先分一刀：AI 不是一个模型</a>
+<a class="lv3" href="#h3-1">六类模型：吃什么，吐什么</a>
+<a class="lv3" href="#h3-2">三段式与端到端：两条路，不是新旧</a>
+<a class="lv3" href="#h3-3">还有一类看不见的：向量模型</a>
+<a class="lv3" href="#h3-4">一句收口</a>
+</div>
+<h2 id="h2-0">U2.0 · 先分一刀：AI 不是一个模型</h2>
+<p>打开豆包，打字提问、按住说话、让它画张图、按「打电话」——四种操作发生在同一个窗口里，看起来是同一个东西。实际上，这四件事背后至少有四个不同的模型在工作。</p>
+<p>一个产品把多个模型包进同一个界面，用户感知不到切换。这不只是豆包的做，主流产品都这样。</p>
+<h3 id="h3-1">六类模型：吃什么，吐什么</h3>
+<div class="tw"><table><thead><tr><th>类别</th><th>吃什么 → 吐什么</th><th>在豆包里的位置</th></tr></thead><tbody><tr><td>文本模型（LLM）</td><td>文字 → 文字</td><td>打字提问，返回文字</td></tr><tr><td>语音识别（ASR）</td><td>声音 → 文字</td><td>按住说话，先把语音转成文字</td></tr><tr><td>语音合成（TTS）</td><td>文字 → 声音</td><td>把回答的文字念出来</td></tr><tr><td>端到端语音（S2S）</td><td>声音 → 声音</td><td>按「打电话」，全程语音，不产生文字</td></tr><tr><td>图像生成（文生图）</td><td>文字 → 图片</td><td>说「画一张」，输出图片</td></tr><tr><td>视频生成（Seedance）</td><td>文字或图 → 视频</td><td>给一张图，输出视频</td></tr></tbody></table></div>
+<p>表 1　六类模型的分工。依各产品公开文档与 OpenRouter 目录整理（2026 年 11 月）。</p>
+<p>这张表最有用的地方不是记住六个名字，是记住中间那一列：<strong>看它吃什么、吐什么。</strong> 这一列决定了它能接什么任务，也决定了你该拿什么标准评价它。</p>
+<p>拿聊天模型去评画图能力，拿语音识别去评回答质量，结论一定是错的——评测的对象根本不是同一个东西。</p>
+<h3 id="h3-2">三段式与端到端：两条路，不是新旧</h3>
+<p>语音问答有两条技术路径，它们的差别不在先进程度，在于<strong>中间要不要落一层文字</strong>。</p>
+<p><strong>三段式</strong>：语音识别（ASR）把声音转成文字，文本模型读懂文字并组织答案，语音合成（TTS）把答案念出来。中间那层文字是留存下来的，可以查、可以审、可以拿去做后续处理。</p>
+<p><strong>端到端</strong>（Speech2Speech）：理解与生成在同一个模型里完成，语音直接进、语音直接出。豆包按「打电话」走的是这条。它接得住语气、打断和停顿，代价是<strong>不产生文字记录</strong>。</p>
+<p>这不构成优劣判断。需要留痕、审核、拿转写做二次加工的场合，三段式更合适；追求对话自然度的场合，端到端更好。知道差别，才不会在需要查记录的时候找不到记录。</p>
+<h3 id="h3-3">还有一类看不见的：向量模型</h3>
+<p>除了上面六类，还有一类不上台面、但天天在用的模型——<strong>向量模型（embedding）</strong>。</p>
+<p>它不生成任何内容，只做一件事：把一段文字压成一串数字。这样两段话就能比「像不像」。知识库能搜到你的 pdf、推荐能猜到你想要什么，靠的都是它。</p>
+<p>所以「为什么它能找到我的文件」这个问题，答案不在聊天模型身上。你以为在跟一个模型打交道，其实背后有一整套分工。</p>
+<h3 id="h3-4">一句收口</h3>
+<p><strong>先问这是哪一类模型，再问它强不强。类别不对，比较就没有意义。</strong></p>
+</main>
+</body>
+</html>
