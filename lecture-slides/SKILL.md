@@ -41,10 +41,12 @@ agent_created: true
 | `assets/deck-shell.html` | 舞台壳：全部 CSS（约 740 行）+ 放映逻辑 + 备注面板。构建时被填充 |
 | `assets/tokens.css` | **配色表（唯一事实源）**：墨水经典，54 个语义变量 + 注释。三份产物共用 |
 | `assets/example.deck.md` | 两屏完整示例（表格分步 + 流程链 + 备注），起手先读它 |
+| `assets/vendor/` | KaTeX 0.19。构建时读：JS 不进产物，CSS 与按需裁剪的字体内嵌进 HTML |
 | `scripts/build.py` | `.deck.md` → 单文件 `.html` |
+| `scripts/render_math.js` | 构建期公式渲染（node 调 KaTeX），由 build.py 自动调用 |
 | `scripts/audit.py` | 静态体检，退出码非 0 不交付 |
 | `references/authoring.md` | 源稿语法、分步写法、键位、常见写法错误 |
-| `references/layouts.md` | **11 种版式片段**，直接复制改字 |
+| `references/layouts.md` | **13 种版式片段**，直接复制改字 |
 | `references/validation.md` | 浏览器量测脚本与判读表 |
 
 ## 工作流
@@ -96,6 +98,60 @@ python3 <SKILL>/scripts/audit.py 课程.html
 
 交付前把 html 复制一份到别的目录再预览——预览会改写被预览的文件，源文件要留干净的。
 文件名用 `<主题>_<场景>.html`，别把 `test`/`v2`/`最终` 留在正式文件名上。
+
+## 公式
+
+公式写成 `::: fml` 块，**在构建时**用 KaTeX 排好，产物里是静态 HTML：
+
+```markdown
+::: fml
+\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i | 样本均值
+\mathrm{SE}(\bar{x})=\frac{\sigma}{\sqrt{n}} | 标准误
+:::
+```
+
+这么设计是为了避开三件事：产物不必带 266 KB 的 katex.min.js；同步完成，放映时不会先闪一下
+`\frac{a}{b}` 再跳成公式；写错公式在构建阶段就报错，而不是讲课当场白屏。
+
+四条要记住：
+
+1. **写 LaTeX，不要手搓 HTML**。`\sum_{i=1}^{n}` 的上下限、`\sqrt` 的横线、`\bar{x}` 的位置
+   都由引擎处理；自己用 `<sub><sup>` 拼，上下限会并排、根号的勾和横线会散开。
+2. **说明文字里提符号，用 `\(...\)`**。比如 `置换检验里 \(\hat p\) 的标准误`。
+   不要直接打 `p̂` —— 中文字体对组合变音符号的定位是错的，帽子会飘到右下角。
+   `audit.py` 会扫源稿把这类写法挑出来。
+3. **一屏 3–4 条**。到 4 行会自动降一档字号，7 行以后就小了；更多请拆屏。
+4. **构建需要 node**（产物不需要）。缺 node 时 build 直接报错并说明原因，不会静默降级成源码。
+   空公式块、以及 `\href` / `\htmlClass` 这类需要 trust 的命令，也会在构建阶段报错——
+   它们在页面上只会显示成一行红字，不能等到放映才发现。
+
+公式写错的样子：
+
+```
+[build] 有 2 条公式写错了：
+        · \barrac{x}
+          ↳ KaTeX parse error: Undefined control sequence: \barrac
+```
+
+片段与更细的写法见 `references/layouts.md` 第 11 节。
+
+## 交互图
+
+一张图几种状态（换个量法、换个年份、看/不看某个样本），用 `.chart`：图在生成阶段就排成
+SVG 内嵌，按钮只切 `display`。
+
+```html
+<div class="chart">
+  <div class="ctl"><button class="on" data-st="a">方案 A</button><button data-st="b">方案 B</button></div>
+  <div class="cv">
+    <div class="fig on" data-st="a"><svg viewBox="0 0 1400 720">…</svg></div>
+    <div class="fig" data-st="b"><svg viewBox="0 0 1400 720">…</svg></div>
+  </div>
+</div>
+```
+
+切换逻辑在壳里，源稿不用写 JS。两条硬要求：**图必须带 `viewBox`**，**页头用 `hd tight`**
+（页头做满会把图压到半尺寸，字就糊了）。片段见 `references/layouts.md` 第 12 节。
 
 ## 改样式
 

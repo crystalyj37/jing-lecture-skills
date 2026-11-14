@@ -48,7 +48,8 @@ cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.wor
 ```
 <!--brand:clone-md:end-->
 
-只依赖 Python 3 标准库。没有 pip 包，不需要 node。
+只依赖 Python 3 标准库，没有 pip 包。**只有写公式时**构建会调用 node——LaTeX 在这一步被排成
+静态 HTML（见下文「公式与交互图」）。产物本身不依赖 node，仍是双击就开的单文件。
 
 ## 用法
 
@@ -79,6 +80,42 @@ title: 示例 · 模型分几类
 ```
 
 完整写法见 [`lecture-slides/references/authoring.md`](lecture-slides/references/authoring.md)，组件清单见 [`layouts.md`](lecture-slides/references/layouts.md)。起手先读 [`assets/example.deck.md`](lecture-slides/assets/example.deck.md)。
+
+### 公式与交互图
+
+公式写 LaTeX，构建时排好，产物里是静态 HTML——不用带 KaTeX 运行时，放映时也不会先闪一段
+`\frac{a}{b}` 再变成公式：
+
+```markdown
+::: fml
+\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i | 样本均值
+\mathrm{SE}(\bar{x})=\frac{\sigma}{\sqrt{n}} | 标准误
+:::
+```
+
+写错会在构建阶段直接报错，指出是哪一条、错在哪：
+
+```
+[build] 有 2 条公式写错了：
+        · \barrac{x}
+          ↳ KaTeX parse error: Undefined control sequence: \barrac
+```
+
+一张图要几种状态（换个量法、看/不看某个样本），用 `.chart`：图在生成阶段排成 SVG 内嵌，
+按钮只切 `display`，不引图表库、不现场重绘。切换逻辑在舞台壳里，源稿不用写 JS。
+
+```html
+<div class="chart">
+  <div class="ctl"><button class="on" data-st="a">方案 A</button><button data-st="b">方案 B</button></div>
+  <div class="cv">
+    <div class="fig on" data-st="a"><svg viewBox="0 0 1400 720">…</svg></div>
+    <div class="fig" data-st="b"><svg viewBox="0 0 1400 720">…</svg></div>
+  </div>
+</div>
+```
+
+片段见 [`layouts.md`](lecture-slides/references/layouts.md) 第 11、12 节。`assets/showcase.deck.md`
+是一份九屏的完整样张（统计直觉），可以直接 build 出来看效果。
 
 ### 做全套三份
 
@@ -117,7 +154,7 @@ python3 lecture-pack/scripts/crosscheck.py content-map.md handout.md script.md d
 
 **分步要自己写 CSS。** `data-step` 不是统一机制，各组件各写各的隐藏规则（`.tr`、`.chain .st`、`.four .c`……）。加新组件时必须同时写 `.x[data-step]{opacity:0}` 和 `.x[data-step].on{opacity:1}`，漏写不会报错，只是它一开始就显示。
 
-**不追求自动排版。** 每屏的内容密度是作者的事，工具只保证不溢出、不断行错乱、打印不出界。`audit.py` 查 11 项静态问题，包括变量闭环（用了 `var(--x)` 而 `--x` 没定义会报 error）。
+**不追求自动排版。** 每屏的内容密度是作者的事，工具只保证不溢出、不断行错乱、打印不出界。`audit.py` 查结构、版式、变量闭环与公式渲染，退出码非 0 不交付。
 
 **没有主题切换。** 只保留一套「墨水经典」。切换机制一旦存在，每次动颜色都要把 N 套 × 3 份产物重新验一遍，而实际不会用。
 
@@ -131,12 +168,15 @@ lecture-slides/
     deck-shell.html     舞台壳：全部 CSS + 放映逻辑 + 备注面板
     tokens.css          配色表（唯一事实源）
     example.deck.md     两屏完整示例
+    showcase.deck.md    九屏样张（含公式与图，用来看能做到什么程度）
+    vendor/             KaTeX 0.19；构建时读，JS 不进产物，CSS 与字体按需内嵌
   references/
     authoring.md        源稿写法、屏内 HTML、备注、图片
-    layouts.md          组件清单（表格、链、四格、对照……）
+    layouts.md          组件清单（表格、链、四格、对照、公式、交互图……）
     validation.md       体检项与排错
   scripts/
     build.py            .deck.md → .html
+    render_math.js      构建期公式渲染（node 调 KaTeX）
     audit.py            静态体检
 
 lecture-pack/

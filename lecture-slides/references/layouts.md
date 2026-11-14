@@ -179,7 +179,71 @@
 - `aria-label` 必写，既是无障碍也是给自己复盘的检查点
 - SVG 里的字不要小于 18px，投影上看不清
 
-## 11. 视频 `.vbox`
+## 11. 公式 `::: fml`
+
+```markdown
+::: fml
+\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i | 样本均值
+\mathrm{SE}(\bar{x})=\frac{\sigma}{\sqrt{n}} | 标准误
+\left|\frac{x-\mu}{\sigma}\right| \le 1 | 含竖线也照常
+:::
+```
+
+- 一行一条，写法是 `LaTeX | 说明`，说明可省略。分隔符是**空格 + `|` + 空格**，取最右一处，
+  所以公式里写 `|x|`、`\left|...\right|` 不会被切开
+- **写 LaTeX，不要手搓 HTML**。`\bar{x}`、`\sqrt`、`\sum` 的上下限由排版引擎处理，
+  自己用 `<sub><sup>` 拼出来的上下限会并排、根号的横线接不上勾尖
+- 公式在**构建时**排好，产物里是静态 HTML：没有 katex.js、不会闪、写错直接构建报错
+- 每条公式必须写在一行内。要多行对齐用 `\begin{aligned}...\end{aligned}`，中间用 `\\` 换行，
+  但整段仍是一行文本
+- 中文写在 `\text{}` 里，例如 `\text{披露溢价}`；上下标用 `_{\text{买入}}`
+- 说明文字里要提符号，用行内公式 `\(...\)`：
+
+```markdown
+::: fml
+\hat p=\frac{1}{B}\sum_{b=1}^{B}\hat p_b \quad | 置换检验里 \(\hat p\) 的标准误
+:::
+```
+
+**不要直接打组合字符**（`p̂`、`x̄`、`σ̂` 这类「字母 + U+030x」）。中文字体对组合变音符号的
+定位是错的，帽子会飘到字母右下角，看着像个小撇。`audit.py` 会扫源稿并提示改成 `\(...\)`。
+
+- 行数到 4 行会自动降一档字号，7 行以后字会很小——**超过 4 条就拆成两屏**
+- 太长的公式宁可 `\begin{split}` 手断，硬撑会顶出版心
+
+构建公式需要 `node`（只在构建时用，产物不需要）。缺 node 时 build 会明确报错，不会静默降级。
+
+## 12. 交互图 `.chart`
+
+```html
+<header class="hd tight">
+  <div class="kicker">交互图 · 条形图</div>
+  <h2>二十四位经理，四种量法</h2>
+</header>
+
+<div class="chart">
+  <div class="ctl">
+    <span class="lab">显示</span>
+    <button class="on" data-st="rec">综合 z</button>
+    <button data-st="wiki">原始值</button>
+  </div>
+  <div class="cv">
+    <div class="fig on" data-st="rec"><svg viewBox="0 0 1400 720">…</svg></div>
+    <div class="fig" data-st="wiki"><svg viewBox="0 0 1400 720">…</svg></div>
+  </div>
+  <div class="fcap">横轴：知名度指标</div>
+</div>
+```
+
+- 图在**构建/生成阶段**就排成 SVG 内嵌，运行时只切 `display`，不引图表库、不现场重绘
+- 按钮与图靠 `data-st` 配对；切换逻辑在壳里（`.chart` 存在即生效），源稿不用写 JS
+- 图必须带 `viewBox`，否则只能按宽度撑开，会把页头挤走
+- 图表屏用 `<header class="hd tight">`（kicker + 标题，不放导语和脚注）。页头做满时图只剩
+  500px 高，会被缩到原尺寸的一半，图里的字投到幕布上是糊的
+- 阅读模式下 `.chart` 会自动放宽到 1120px。820px 的正文栏会把 1400 宽的图缩到 0.59 倍，
+  12px 的字只剩 7px
+
+## 13. 视频 `.vbox`
 
 ```html
 <div class="vbox">

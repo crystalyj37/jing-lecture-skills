@@ -8,19 +8,23 @@
 
 ## 1. 目录
 
-| 文件 | 行数 | 职责 |
-|---|---|---|
-| `SKILL.md` | 133 | 给模型看的路由说明：什么时候用、边界、工作流 |
-| `assets/deck-shell.html` | 1073 | 舞台壳。含全部 CSS、放映逻辑、备注面板。构建时被填充 |
-| `assets/tokens.css` | 90 | **配色表**（墨水经典，54 个语义变量）。三份产物共用的唯一事实源 |
-| `assets/example.deck.md` | 75 | 两屏完整示例（表格分步 + 流程链 + 备注） |
-| `scripts/build.py` | 272 | `.deck.md` → `.html` |
-| `scripts/audit.py` | 182 | 静态体检（含变量闭环），退出码非 0 不交付 |
-| `references/authoring.md` | 129 | 源稿语法、键位、常见写法错误 |
-| `references/layouts.md` | 204 | 11 种版式片段，复制改字 |
-| `references/validation.md` | 117 | 浏览器量测脚本与判读表 |
+| 文件 | 职责 |
+|---|---|
+| `SKILL.md` | 给模型看的路由说明：什么时候用、边界、工作流 |
+| `assets/deck-shell.html` | 舞台壳。含全部 CSS、放映逻辑、备注面板。构建时被填充 |
+| `assets/tokens.css` | **配色表**（墨水经典，54 个语义变量）。三份产物共用的唯一事实源 |
+| `assets/example.deck.md` | 两屏完整示例（表格分步 + 流程链 + 备注） |
+| `assets/showcase.deck.md` | 九屏样张（统计直觉），含公式与交互图的写法 |
+| `assets/vendor/` | KaTeX 0.19，MIT。构建时读：JS 不进产物，CSS 与字体按需内嵌 |
+| `scripts/build.py` | `.deck.md` → `.html`，含公式块的构建期渲染 |
+| `scripts/render_math.js` | node 侧公式渲染器，由 `build.py` 调用 |
+| `scripts/audit.py` | 静态体检（含变量闭环、公式），退出码非 0 不交付 |
+| `references/authoring.md` | 源稿语法、键位、常见写法错误 |
+| `references/layouts.md` | 13 种版式片段，复制改字 |
+| `references/validation.md` | 浏览器量测脚本与判读表 |
 
-依赖：**只有 Python 3 标准库**。没有 pip 包，不需要 node。
+依赖：**Python 3 标准库**，没有 pip 包。**只有写公式时**构建需要 node——KaTeX 在构建期把
+LaTeX 排成静态 HTML，产物里既没有 katex.js 也没有字体请求。
 浏览器验收用 `ego-browser`（可选，静态检查不需要）。
 
 ---
@@ -33,17 +37,18 @@ deck.deck.md
     ├─ ① 读 front matter（--- 包起来的 title）
     ├─ ② 切屏：按 ::: screen 深度计数
     ├─ ③ 收内层块：::: note → <div class="spk">，::: md → 轻量 md
-    ├─ ④ 生成 <section class="screen" id data-steps data-title>
-    ├─ ⑤ 填壳：{{TOKENS}} {{TITLE}} {{SCREENS}} {{TOC}}
-    └─ ⑥ 无第三方依赖，直接写单文件
+    ├─ ④ 公式：扫出 ::: fml 的 LaTeX，一次 node 调用交给 KaTeX 排成静态 HTML
+    ├─ ⑤ 生成 <section class="screen" id data-steps data-title>
+    ├─ ⑥ 填壳：{{MATH_CSS}} {{TOKENS}} {{TITLE}} {{SCREENS}} {{TOC}}
+    └─ ⑦ 直接写单文件（无第三方运行时）
                 │
                 ▼
-        deck.html（约 51 KB 空壳 + 你的内容）
+        deck.html（约 51 KB 空壳 + 你的内容；用了公式再加排好的 HTML 与裁剪后的字体）
 ```
 
-### 四个占位符
+### 五个占位符
 
-`deck-shell.html` 里只有四处占位，`build.py` 一次性替换：
+`deck-shell.html` 里只有五处占位，`build.py` 一次性替换：
 
 | 占位 | 填什么 |
 |---|---|
@@ -51,9 +56,10 @@ deck.deck.md
 | `{{SCREENS}}` | 所有 `<section class="screen">` |
 | `{{TOC}}` | 阅读模式侧栏的静态目录，由屏 `title` 自动生成 |
 | `{{TOKENS}}` | `assets/tokens.css` 整段（含注释）。配色只有这一个出处 |
+| `{{MATH_CSS}}` | KaTeX 样式（按源稿用字裁过字体）。没有公式时为空 |
 
 替换完还有残留占位符，`build.py` 直接退出——不给你一个「看着正常、其实少了东西」的产物。
-**壳里不允许有第五处占位**。要加构建期变量，改 `build.py` 的 `build()`。
+**壳里不允许有第六处占位**。要加构建期变量，改 `build.py` 的 `build()`。
 
 ### 为什么屏切分用深度计数
 
@@ -218,6 +224,9 @@ python3 scripts/audit.py 课程.html                    # 退出码 0 才算过
 | 成品里还有 `:::` | error | 有块没被解析 |
 | 占位符未替换 | error | 壳没填对 |
 | `var(--x)` 的 `--x` 没定义 | error | 整条声明静默失效，页面只是「看着怪」 |
+| 产物里残留 `katex.min.js` / 字体请求 | error | 说明退回了运行时渲染，放映会闪 |
+| 公式渲染失败（`.katex-error`） | error | 构建期就该拦住，不该等放映白屏 |
+| 说明文字里有组合字符（`p̂`） | warn | 中文字体会把帽子排到字母右下角 |
 | 超过 4 MB | warn | 首屏会慢 |
 
 **它查不出**：字压到边、第三列折行、字号太小、讲起来顺不顺。这些必须浏览器量测 + 人看一遍。
@@ -304,8 +313,8 @@ A4 两份由 `theme.py` 注入）。改完必须重新 build，壳不会自动�
 1. **不做自动排版**。屏内就是 HTML，版式要选片段、要改字。
 2. **不做画布定位**。没有 x/y/w/h，没有 morph 补间。要那种效果用 `bento-slides`。
 3. **不内嵌视频**。视频走外链，几十 MB 的 base64 会让文件打不开。
-4. **不支持数学公式开箱即用**。要 KaTeX 得自己引（约 645 KB），
-   为此专门验过：表格里只用到几个记号时，`<i>` + Unicode 更划算。
+4. **公式没有编号与交叉引用**。KaTeX 不支持 `\label`/`\eqref`，要编号只能手写 `\tag{1}`；
+   长公式要在 `\begin{aligned}` 里自己断行，没有自动断行。
 5. **阅读模式不是详细材料**。它只展开屏上的字 + `.deep` 块。
    真正的长文材料用 `lecture-pack` 的 `handout.py`。
 6. **预览会改写文件**。交给客户端预览前先 `cp` 一份，源文件留干净的。
@@ -315,7 +324,7 @@ A4 两份由 `theme.py` 注入）。改完必须重新 build，壳不会自动�
 ## 9. 一次完整验证（可复跑）
 
 ```bash
-cd ~/.workbuddy/skills/lecture-slides
+cd lecture-slides                              # 仓库里，或 ~/.workbuddy/skills/lecture-slides
 python3 scripts/build.py assets/example.deck.md -o /tmp/t.html
 python3 scripts/audit.py /tmp/t.html          # 期望 0 error / 0 warn
 ```

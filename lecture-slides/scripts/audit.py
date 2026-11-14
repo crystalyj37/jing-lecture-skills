@@ -64,6 +64,19 @@ def check_source(text):
         if "title=" not in attrs:
             err("屏缺 title=，目录与底栏会空：%s" % attrs.strip()[:60])
 
+    # 公式块：空块会让整屏排版塌成一条空白
+    for i, m in enumerate(re.finditer(r'(?ms)^:::\s*fml\s*$\n(.*?)^:::\s*$', text), 1):
+        if not m.group(1).strip():
+            warn("第 %d 个 ::: fml 块是空的" % i)
+
+    # 组合变音符号：p̂ / x̄ / ž 这类「字母 + U+030x」在中文字体里定位是错的，
+    # 帽子会飘到右下角，看起来像个撇。要让用户改写成 \(...\)，不能只靠肉眼发现。
+    for i, line in enumerate(text.split("\n"), 1):
+        if re.search(r"[\u0300-\u036f]", line):
+            warn("第 %d 行有组合符号（%s），中文字体里会盖歪；"
+                 "公式里写 \\hat{p}，说明文字里写 \\(\\hat p\\)"
+                 % (i, line.strip()[:36]))
+
 
 def check_html(doc):
     screens = re.findall(r'<section class="screen"[^>]*>', doc)
@@ -127,11 +140,39 @@ def check_html(doc):
 
     if ":::" in doc:
         err("成品里还有 ::: 标记，说明有块没被 build 吃掉")
-    for ph in ("{{TITLE}}", "{{SCREENS}}", "{{TOC}}", "{{TOKENS}}"):
+    for ph in ("{{TITLE}}", "{{SCREENS}}", "{{TOC}}", "{{TOKENS}}", "{{MATH_CSS}}"):
         if ph in doc:
             err("占位符未替换：%s" % ph)
 
+    check_math(doc)
     check_vars(doc)
+
+
+def check_math(doc):
+    """
+    公式是构建期排好的静态 HTML，所以这里查的是「排完之后还缺什么」。
+    最容易出的两种静默坏法：样式没注入（符号挤成一团）、字体被裁掉了（字形变方框）。
+    """
+    nodes = len(re.findall(r'class="katex[ "]', doc))
+    if not nodes:
+        return
+
+    bad = len(re.findall(r'class="katex-error"', doc))
+    if bad:
+        err("有 %d 处公式渲染失败（页面上会显示红字源码）" % bad)
+
+    head = doc.split("</style>")[0]
+    if ".katex{" not in head and ".katex " not in head and ".katex-display" not in head:
+        err("页面里有公式，但没有注入 KaTeX 样式——符号会挤成一团")
+    for need in ("KaTeX_Main", "KaTeX_Math", "KaTeX_Size1"):
+        if need not in head:
+            err("公式缺少字体 %s，字形会掉成方框" % need)
+
+    if "katex.render" in doc or "renderToString" in doc or "katex.min.js" in doc:
+        warn("产物里还带着 KaTeX 运行时脚本；公式应在构建期排好，运行时不需要它")
+
+    info("公式 %d 处，字体 %d 个"
+         % (nodes, len(set(re.findall(r'font-family:\s*"?(KaTeX_[A-Za-z0-9]+)', head)))))
 
 
 def check_vars(doc):
