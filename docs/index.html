@@ -3,10 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--brand:head-->
 <title>jing-lecture-skills · 一份内容做成三份产物</title>
-<link rel="icon" href="img/jing-mark.png">
+<link rel="icon" href="img/mark.png">
 <meta name="description" content="晶雕细琢 · 把一份内容做成三份互相咬合的产物：可投屏 slides、可分享材料、讲者讲稿。">
 <meta name="author" content="晶雕细琢">
+<meta property="og:title" content="jing-lecture-skills · 一份内容做成三份产物">
+<meta property="og:description" content="把一份内容做成三份互相咬合的产物：可投屏 slides、可分享材料、讲者讲稿。">
+<meta property="og:image" content="https://crystalyj37.github.io/jing-lecture-skills/img/deck.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<!--brand:head:end-->
 <style>
 :root{
   --paper:#fcfbf8; --card:#fffdf9; --ink:#17150f; --ink2:#3d3830;
@@ -126,11 +133,13 @@ footer a:hover{color:var(--accent)}
 <div class="wrap">
 
   <div class="top">
+    <!--brand:topbar-->
     <div class="brand">
-      <img src="img/jing-avatar.png" alt="晶雕细琢">
+      <img src="img/avatar.png" alt="晶雕细琢">
       <span class="bt"><b>晶雕细琢</b><i>从复杂中找关键，把问题讲清楚</i></span>
     </div>
     <a href="https://github.com/crystalyj37/jing-lecture-skills">GitHub ↗</a>
+    <!--brand:topbar:end-->
   </div>
 
   <header>
@@ -208,12 +217,16 @@ python3 lecture-pack/scripts/crosscheck.py content-map.md handout.md script.md t
 
   <h2>依赖</h2>
   <p class="note">只有 Python 3 标准库。两个目录必须并排放在同一个父目录下——<code>lecture-pack</code> 要读 <code>../lecture-slides/assets/tokens.css</code> 取配色表。</p>
+<!--brand:clone-html-->
 <pre>git clone https://github.com/crystalyj37/jing-lecture-skills.git
 cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.workbuddy/skills/</pre>
+<!--brand:clone-html:end-->
 
   <footer>
-    <span class="fbrand"><img src="img/jing-mark.png" alt="">MIT · 内容示例为通用科普，与任何机构无关</span>
+    <!--brand:footer-->
+    <span class="fbrand"><img src="img/mark.png" alt="">MIT · 内容示例为通用科普，与任何机构无关</span>
     <span><a href="https://github.com/crystalyj37/jing-lecture-skills">源码</a> · <a href="https://github.com/crystalyj37/jing-lecture-skills/blob/main/lecture-slides/README.md">slides 文档</a> · <a href="https://github.com/crystalyj37/jing-lecture-skills/blob/main/lecture-pack/README.md">pack 文档</a></span>
+    <!--brand:footer:end-->
   </footer>
 
 </div>

@@ -1,6 +1,8 @@
 # jing-lecture-skills
 
+<!--brand:sub-->
 <sub>晶雕细琢 · 从复杂中找关键，把问题讲清楚</sub>
+<!--brand:sub:end-->
 
 把一份内容，做成三份互相咬合的产物：**可投屏的 slides、可发给听众的详细材料、讲者自己拿的讲稿**。
 
@@ -29,18 +31,22 @@
 
 在线看：
 
+<!--brand:demo-->
 - [slides 示例](https://crystalyj37.github.io/jing-lecture-skills/deck.html)（按空格推进）
 - [材料 PDF](https://crystalyj37.github.io/jing-lecture-skills/handout.pdf)
 - [讲稿 PDF](https://crystalyj37.github.io/jing-lecture-skills/script.pdf)
+<!--brand:demo:end-->
 
 ## 装法
 
 两个目录**必须并排放在同一个父目录下**——`lecture-pack` 要读 `../lecture-slides/assets/tokens.css` 取配色表。
 
+<!--brand:clone-md-->
 ```bash
 git clone https://github.com/crystalyj37/jing-lecture-skills.git
 cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.workbuddy/skills/
 ```
+<!--brand:clone-md:end-->
 
 只依赖 Python 3 标准库。没有 pip 包，不需要 node。
 
@@ -147,7 +153,27 @@ lecture-pack/
     script.py           讲稿 → A4 HTML
     theme.py            读配色表并注入
     crosscheck.py       三份对账
+
+brand/                  门面署名：头像、微标、名字、链接（改这里，别改页面）
+  brand.json            唯一事实源
+  assets/               图片原稿
+  README.md             替换步骤与字段表
+scripts/
+  apply_brand.py        brand.json → 页面 / README / LICENSE
+docs/                   生成的展示页与示例产物（不要手改）
 ```
+
+## 换自己的署名
+
+头像、微标、名字、标语全在 `brand/brand.json` 和 `brand/assets/` 两处，页面里不手写。
+换完跑一次：
+
+```bash
+python3 scripts/apply_brand.py
+```
+
+它会把这六处（页面四处、README 两处）、LICENSE 版权行和两张图一起改到位，
+`--check` 可以检查有没有漂。字段表、图片规格、能放什么不能放什么，见 [brand/README.md](brand/README.md)。
 
 ## 许可
 
