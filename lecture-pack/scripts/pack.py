@@ -4,34 +4,22 @@
 pack.py：一条命令跑完全流程。
 
 在一个目录里找 content-map.md / script.md / handout.md / *.deck.md，依次：
-材料 → 讲稿 → slides 构建 → audit → 对账 →（--pdf）两份 A4 打印。
+材料 → 讲稿 → slides 构建 → audit → 对账 →（--pdf）打印 PDF。
 缺哪份就跳过哪份；任何一步失败，退出码为 1。
 
 用法：
   python3 pack.py 讲座目录 --total 45
   python3 pack.py 讲座目录 --total 45 --pdf -o 讲座目录/dist
+  python3 pack.py 讲座目录 --pdf --slides-pdf steps      # slides 也出 PDF，分步屏一步一页
 """
 
 import argparse
-import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SLIDES = HERE.parent.parent / "lecture-slides" / "scripts"
-CHROMES = ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-           "google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
-           "chrome", "msedge"]
-
-
-def chrome():
-    for c in [os.environ.get("CHROME")] + CHROMES:
-        p = c and (shutil.which(c) or (c if Path(c).exists() else None))
-        if p:
-            return p
-    return None
 
 
 def main():
@@ -40,6 +28,8 @@ def main():
     ap.add_argument("-o", "--out", help="产物目录，默认 <dir>/dist")
     ap.add_argument("--total", type=float, help="总时长（分钟），交给 crosscheck 判超时")
     ap.add_argument("--pdf", action="store_true", help="用本机 Chrome 打印 handout / script 的 PDF")
+    ap.add_argument("--slides-pdf", nargs="?", const="final", choices=("final", "steps"),
+                    help="slides 也出 PDF：final 每屏最终态一页（默认），steps 一步一页")
     a = ap.parse_args()
 
     src = Path(a.dir).resolve()
@@ -86,22 +76,17 @@ def main():
         if subprocess.run([str(c) for c in cmd]).returncode:
             failed.append(name)
 
-    if a.pdf:
-        ch = chrome()
-        if not ch:
-            failed.append("PDF")
-            print("\n[pack] 没找到 Chrome / Chromium / Edge；用环境变量 CHROME 指定路径")
-        for n in ("handout", "script"):
-            page = out / (n + ".html")
-            if ch and page.exists():
-                pdf = out / (n + ".pdf")
-                pdf.unlink(missing_ok=True)
-                r = subprocess.run([ch, "--headless=new", "--disable-gpu", "--no-sandbox",
-                                    "--no-pdf-header-footer", "--print-to-pdf=%s" % pdf,
-                                    page.as_uri()], capture_output=True)
-                print("[pack] %s %s" % ("写出" if pdf.exists() and not r.returncode else "失败", pdf))
-                if r.returncode or not pdf.exists():
-                    failed.append("PDF")
+    pdfs = [n for n in ("handout", "script") if a.pdf]
+    if a.slides_pdf and deck:
+        pdfs.append(deck.name[:-len(".deck.md")])
+    for n in pdfs:
+        page = out / (n + ".html")
+        if page.exists():
+            cmd = [py, SLIDES / "pdf.py", page]
+            if n not in ("handout", "script") and a.slides_pdf == "steps":
+                cmd.append("--steps")
+            if subprocess.run([str(c) for c in cmd]).returncode:
+                failed.append("PDF")
 
     print("\n[pack] 产物在 %s" % out)
     if failed:

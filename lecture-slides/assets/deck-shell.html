@@ -874,6 +874,20 @@ html.read .qrcard{max-width:420px;margin:0 auto}
 #spkNext{margin-top:auto;border-top:1px solid #342c24;padding-top:14px;font-size:14px;color:#90846f}
 html.read #spk{display:none!important}
 
+/* ============ 导出 PDF：每屏一页 16:9（scripts/pdf.py 或浏览器打印） ============ */
+/* 默认导出每屏的最终态；地址加 ?print=steps 时每一步单独一页。交互图停在默认那一帧。 */
+@page slide{size:1920px 1080px;margin:0}
+@media print{
+  html.demo{background:var(--paper);overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html.demo .stage{position:static;transform:none!important;width:1920px;height:auto}
+  html.demo .screen{position:relative;inset:auto;height:1080px;opacity:1;transition:none;
+    page:slide;break-after:page;overflow:hidden}
+  html.demo .screen:last-child{break-after:auto}
+  html.demo .screen [data-step]{opacity:1!important;transform:none!important;transition:none!important}
+  html.demo .screen [data-step].pdf-off{opacity:0!important}
+  html.demo .bar,html.demo .progress,html.demo .toc,.overlay,.black,.clock,#spk{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -945,6 +959,22 @@ html.read #spk{display:none!important}
 
 <script>
 (function(){
+  // ?print=steps：把每个分步屏拆成「第 0 步 … 第 n 步」几张静态屏，导出 PDF 时一步一页
+  if(/[?&]print=steps/.test(location.search)){
+    [].forEach.call(document.querySelectorAll('.screen'),function(s){
+      var n=parseInt(s.dataset.steps||'0',10);
+      for(var k=0;k<n;k++){
+        var c=s.cloneNode(true);
+        if(k) c.removeAttribute('id');
+        c.dataset.steps='0';
+        [].forEach.call(c.querySelectorAll('[data-step]'),function(el){ if(+el.dataset.step>k) el.classList.add('pdf-off'); });
+        var cv=s.querySelectorAll('canvas');
+        [].forEach.call(c.querySelectorAll('canvas'),function(x,j){ x.getContext('2d').drawImage(cv[j],0,0); });
+        s.parentNode.insertBefore(c,s);
+      }
+      if(n){ s.removeAttribute('id'); s.dataset.steps='0'; }
+    });
+  }
   var stage=document.getElementById('stage');
   var screens=[].slice.call(document.querySelectorAll('.screen'));
   var state=screens.map(function(){return 0;});

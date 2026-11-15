@@ -19,6 +19,7 @@
 | `scripts/build.py` | `.deck.md` → `.html`，含公式块的构建期渲染 |
 | `scripts/render_math.js` | node 侧公式渲染器，由 `build.py` 调用 |
 | `scripts/audit.py` | 静态体检（含变量闭环、公式），退出码非 0 不交付 |
+| `scripts/pdf.py` | 可选：html → PDF，每屏一页 16:9；`--steps` 分步屏一步一页 |
 | `references/authoring.md` | 源稿语法、键位、常见写法错误 |
 | `references/layouts.md` | 13 种版式片段，复制改字 |
 | `references/validation.md` | 浏览器量测脚本与判读表 |
@@ -203,7 +204,13 @@ stage.style.transform = 'scale('+s+')';
 python3 scripts/build.py 课程.deck.md -o 课程.html
 python3 scripts/build.py 课程.deck.md --check-only    # 干跑，只看屏数与体积
 python3 scripts/audit.py 课程.html                    # 退出码 0 才算过
+python3 scripts/pdf.py 课程.html [--steps]            # 可选：导出 PDF
 ```
+
+PDF 的实现：壳里有一段 `@media print` + 命名页 `@page slide{size:1920px 1080px;margin:0}`，
+把舞台从「叠放 + 缩放」改成「一屏一页」，分步元素全部点亮；`?print=steps` 时，载入阶段把每个
+分步屏复制成 n+1 张静态屏（canvas 连同已画好的内容一起复制）。实测：示例 2 屏 → 2 页 / 逐步 10 页，
+九屏样张 → 9 页 / 逐步 22 页。适用场景与会丢什么，见 SKILL.md「导出 PDF」。
 
 `build.py` 不传 `-o` 时输出同目录同名 `.html`（`课程.deck.md` → `课程.html`），输出目录不存在会自动建；
 `--title` 可覆盖 front matter 的标题。源稿带 BOM（Windows 记事本存的）也能正常读。

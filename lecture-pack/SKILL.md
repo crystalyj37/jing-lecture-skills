@@ -83,6 +83,9 @@ handout.pdf / script.pdf  ← 打印：A4、有页眉页码、逐页不出界
 python3 <SKILL>/scripts/pack.py <目录> --total 90 --pdf
 ```
 
+`--pdf` 出两份 A4；要 slides 的 PDF（交主办方、归档、发群）再加 `--slides-pdf`（每屏一页）或
+`--slides-pdf steps`（分步屏一步一页）。slides PDF 会丢掉分步、交互与快捷键，讲课仍用 HTML。
+
 单独跑某一步：
 
 ```bash

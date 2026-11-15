@@ -19,7 +19,7 @@
 | `scripts/crosscheck.py` | 246 | 三份对账，退出码非 0 不交付 |
 | `scripts/handout.py` | 343 | `handout.md` → 单文件网页（含打印页眉页码） |
 | `scripts/script.py` | 389 | `script.md` → A4 讲稿网页（分单元、`〔〕` 灰底、防跨页） |
-| `scripts/pack.py` | 113 | 一条命令跑完材料、讲稿、slides、audit、对账与 PDF |
+| `scripts/pack.py` | 98 | 一条命令跑完材料、讲稿、slides、audit、对账与 PDF（`--slides-pdf` 连 slides 一起） |
 | `scripts/theme.py` | 56 | 读配色表 `../lecture-slides/assets/tokens.css`，给两份 A4 注入 |
 | `assets/example/content-map.md` | 29 | 样张清单（1 个单元） |
 | `assets/example/script.md` | 47 | 样张讲稿 |

@@ -156,6 +156,10 @@ python3 lecture-pack/scripts/crosscheck.py content-map.md \
 
 Linux 把命令换成 `google-chrome` 或 `chromium`，Windows 换成 `chrome.exe` 的完整路径。
 
+slides 也能出 PDF（可选）：`python3 lecture-slides/scripts/pdf.py talk.html`，每屏一页 16:9；
+`--steps` 让分步屏一步一页；`pack.py --slides-pdf [steps]` 一并出。适合交主办方、归档、发群、
+打印批注——分步、滑块和图表切换、备注与快捷键都会丢，**现场讲课仍用 HTML**。
+
 ## 设计取舍
 
 **内容和版式分开。** `.deck.md` 里只有内容和「这一屏是什么结构」的标记，版式全在 `assets/deck-shell.html`。改一处样式，所有 deck 同时变。
@@ -188,6 +192,7 @@ lecture-slides/
     build.py            .deck.md → .html
     render_math.js      构建期公式渲染（node 调 KaTeX）
     audit.py            静态体检
+    pdf.py              可选：html → PDF（slides 每屏一页）
 
 lecture-pack/
   SKILL.md              三产物怎么分工、什么不该做

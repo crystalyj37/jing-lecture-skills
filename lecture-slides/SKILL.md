@@ -45,6 +45,7 @@ agent_created: true
 | `scripts/build.py` | `.deck.md` → 单文件 `.html` |
 | `scripts/render_math.js` | 构建期公式渲染（node 调 KaTeX），由 build.py 自动调用 |
 | `scripts/audit.py` | 静态体检，退出码非 0 不交付 |
+| `scripts/pdf.py` | 可选：html → PDF，每屏一页 16:9（`--steps` 一步一页） |
 | `references/authoring.md` | 源稿语法、分步写法、键位、常见写法错误 |
 | `references/layouts.md` | **13 种版式片段**，直接复制改字 |
 | `references/validation.md` | 浏览器量测脚本与判读表 |
@@ -152,6 +153,24 @@ SVG 内嵌，按钮只切 `display`。
 
 切换逻辑在壳里，源稿不用写 JS。两条硬要求：**图必须带 `viewBox`**，**页头用 `hd tight`**
 （页头做满会把图压到半尺寸，字就糊了）。片段见 `references/layouts.md` 第 12 节。
+
+## 导出 PDF（可选）
+
+```bash
+python3 <SKILL>/scripts/pdf.py 课程.html                       # 每屏一页，分步屏取最终态
+python3 <SKILL>/scripts/pdf.py 课程.html --steps -o 逐步.pdf    # 分步屏一步一页（第 0 步 … 第 n 步）
+```
+
+每页 1920×1080（16:9），用本机 Chrome / Chromium / Edge 打印，找不到时用环境变量 `CHROME` 指定。
+在浏览器里直接 Ctrl/⌘+P 也是每屏一页；地址加 `?print=steps` 再打印就是一步一页。
+
+**什么时候用**：主办方要提前交 PDF、投稿或答辩材料要附 slides、归档、发微信群（HTML 常打不开）、
+打印出来或在 iPad 上批注。
+
+**它会丢掉的**：分步揭示（默认版一屏全出）、可拖滑块和图表切换（定格在默认那一帧）、
+`.deep` 细读块（演示画面里本来就不显示）、备注与全部快捷键。**现场讲课仍用 HTML**；
+要给听众课后读的长文，用 lecture-pack 的 A4 材料，不要拿这份 PDF 代替。
+阅读模式（`?mode=read`）打印时仍是普通长页，不受这条规则影响。
 
 ## 改样式
 
