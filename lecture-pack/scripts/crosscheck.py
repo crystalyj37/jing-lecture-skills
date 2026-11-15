@@ -4,7 +4,7 @@
 crosscheck.py：三份产物对账。
 
 一份内容写成 handout / deck / script，最大的风险是改了一处、三份不同步。
-这个脚本拿 content-map.md 当基准，查四件事：
+这个脚本拿 content-map.md 当基准，查五件事：
 
   1. 单元齐不齐 —— 清单里有、某份里没有的单元
   2. 顺序对不对 —— 三份的单元序列是否一致
@@ -29,7 +29,11 @@ errs, warns, infos = [], [], []
 
 
 def read(p):
-    return Path(p).read_text(encoding="utf-8") if p and Path(p).exists() else None
+    if not p:
+        return None
+    if not Path(p).exists():
+        sys.exit("文件不存在：%s" % p)
+    return Path(p).read_text(encoding="utf-8-sig")
 
 
 def units_of_map(text):
@@ -58,11 +62,6 @@ def units_of_doc(text, level=2):
     return [m.group(1) for m in re.finditer(pat, text, re.M)]
 
 
-def body_chars(text, uid_prev, uid_next):
-    """取某单元标题之后到下一单元之前的正文字数（去掉标记与标题行）。"""
-    return None
-
-
 def sections(text, level=2):
     """切成 {uid: 正文}，按标题层级。"""
     pat = re.compile(r"^#{%d}\s+(U[\d.]+)[^\n]*\n" % level, re.M)
@@ -75,6 +74,27 @@ def sections(text, level=2):
         body = re.sub(r"^\s*[-*>].*$", "", body, flags=re.M)  # 去掉行首标记行
         body = re.sub(r"\|.*\|", "", body)             # 表格不计入字数
         out[m.group(1)] = len(re.sub(r"\s", "", body))
+    return out
+
+
+def deck_screens(text):
+    """按 ::: 深度切屏，返回 [(属性行, 正文)]；屏内的 fml / note 块不会提前截断。"""
+    out, cur, buf, depth = [], None, [], 0
+    for line in text.split("\n"):
+        s = line.strip()
+        if depth == 0:
+            m = re.match(r"^:::\s*screen\b(.*)$", s)
+            if m:
+                cur, buf, depth = m.group(1), [], 1
+            continue
+        if s == ":::":
+            depth -= 1
+            if depth == 0:
+                out.append((cur, "\n".join(buf)))
+                continue
+        elif s.startswith(":::"):
+            depth += 1
+        buf.append(line)
     return out
 
 
@@ -95,7 +115,7 @@ def main():
     ap.add_argument("--script")
     ap.add_argument("--handout")
     ap.add_argument("--deck", help=".deck.md")
-    ap.add_argument("--total", type=float, help="总时长（分钟），不填则取清单加总")
+    ap.add_argument("--total", type=float, help="总时长（分钟），不填只提示、不判超时")
     a = ap.parse_args()
 
     mp = read(a.map)
@@ -177,14 +197,15 @@ def main():
     # ---- 幻灯片 ----
     if a.deck:
         dp = read(a.deck) or ""
-        screens = re.findall(r'^:::\s*screen\s+(.*)$', dp, re.M)
-        tagged = {}
-        for s in screens:
-            sid = re.search(r'id="?([\w.-]+)', s)
+        tagged, bodies = {}, []
+        for i, (s, body) in enumerate(deck_screens(dp), 1):
+            sid = re.search(r'\bid="?([\w.-]+)', s)
+            sid = sid.group(1) if sid else "s%d" % i
             uu = re.search(r'units="?([^"\s]+)', s)
-            if uu and sid:
+            if uu:
+                bodies.append((sid, body))
                 for x in uu.group(1).split(","):
-                    tagged.setdefault(x.strip(), []).append(sid.group(1))
+                    tagged.setdefault(x.strip(), []).append(sid)
         if not tagged:
             warns.append("slides 的 screen 没写 units=\"U2.0\"，无法核对单元覆盖")
         else:
@@ -194,16 +215,13 @@ def main():
 
             hp = read(a.handout) or ""
             if hp:
-                for u, sids in tagged.items():
-                    for sid in sids:
-                        m = re.search(r'^:::\s*screen[^\n]*id="?%s"?[^\n]*\n(.*?)^:::$'
-                                      % re.escape(sid), dp, re.S | re.M)
-                        if not m:
-                            continue
-                        dnum = nums(m.group(1)) - nums(hp)
-                        if dnum:
-                            errs.append("[%s] 屏上出现、材料里没有的数字：%s"
-                                        % (sid, "、".join(sorted(dnum))))
+                for sid, body in bodies:
+                    dnum = nums(body) - nums(hp)
+                    if dnum:
+                        errs.append("[%s] 屏上出现、材料里没有的数字：%s"
+                                    % (sid, "、".join(sorted(dnum))))
+            else:
+                warns.append("没给 --handout，屏上数字没有核对")
 
     # ---- 半成品标记 ----
     for name, txt in (("讲稿", read(a.script)), ("材料", read(a.handout)),
