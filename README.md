@@ -49,6 +49,8 @@ cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.wor
 ```
 <!--brand:clone-md:end-->
 
+装到别的 agent 也一样，只要两个目录并排：Claude Code 放 `~/.claude/skills/`，Codex / Cursor 等读 `~/.agents/skills/`。
+
 只依赖 Python 3 标准库，没有 pip 包。**只有写公式时**构建会调用 node——LaTeX 在这一步被排成
 静态 HTML（见下文「公式与交互图」）。产物本身不依赖 node，仍是双击就开的单文件。
 
@@ -120,32 +122,39 @@ title: 示例 · 模型分几类
 
 ### 做全套三份
 
+把 `content-map.md`、`script.md`、`handout.md` 和一份 `*.deck.md` 放进同一个目录（模板见
+`lecture-pack/assets/example/`），一条命令出全部产物并对账：
+
 ```bash
-# 1. 先把内容清单写出来（单元、顺序、每节的目的）
-#    模板见 lecture-pack/assets/example/content-map.md
-
-# 2. 材料与讲稿
-python3 lecture-pack/scripts/handout.py handout.md -o handout.html --title "示例分享"
-python3 lecture-pack/scripts/script.py  script.md  -o script.html
-
-# 3. slides
-python3 lecture-slides/scripts/build.py deck.deck.md -o deck.html
-
-# 4. 对账：单元、顺序、数字是否三份一致
-python3 lecture-pack/scripts/crosscheck.py content-map.md handout.md script.md deck.deck.md
+python3 lecture-pack/scripts/pack.py 讲座目录 --total 45 --pdf
 ```
 
-`crosscheck.py` 做的是机械核对：每个单元在不在、顺序对不对、材料里出现的数字在 slides 上有没有出处、有没有留「待补」。它查不出「讲得对不对」，只能查「三份说的是不是同一件事」。
+产物写到 `讲座目录/dist/`；材料、讲稿、slides、audit、对账、PDF 任何一步没过，退出码为 1。
+`--pdf` 会自动找本机的 Chrome / Chromium / Edge，找不到时用环境变量 `CHROME` 指定。
+
+想分步跑：
+
+```bash
+python3 lecture-pack/scripts/handout.py handout.md -o handout.html
+python3 lecture-pack/scripts/script.py  script.md  -o script.html
+python3 lecture-slides/scripts/build.py deck.deck.md -o deck.html
+python3 lecture-pack/scripts/crosscheck.py content-map.md \
+  --script script.md --handout handout.md --deck deck.deck.md --total 45
+```
+
+`crosscheck.py` 做的是机械核对：每个单元在不在、顺序对不对、slides 上的数字在材料里有没有出处、有没有留「待补」。它查不出「讲得对不对」，只能查「三份说的是不是同一件事」。
 
 ### 打印 PDF
 
-两份 A4 都是 HTML，用 Chrome 打印即可，页眉页码由 `@page` 规则生成，不依赖打印对话框的设置：
+两份 A4 都是 HTML，用 Chrome 打印即可（`pack.py --pdf` 就是做这件事），页眉页码由 `@page` 规则生成，不依赖打印对话框的设置：
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
   --headless --no-pdf-header-footer \
   --print-to-pdf=handout.pdf file:///path/to/handout.html
 ```
+
+Linux 把命令换成 `google-chrome` 或 `chromium`，Windows 换成 `chrome.exe` 的完整路径。
 
 ## 设计取舍
 
@@ -194,6 +203,7 @@ lecture-pack/
     script.py           讲稿 → A4 HTML
     theme.py            读配色表并注入
     crosscheck.py       三份对账
+    pack.py             一条命令跑完全流程
 
 brand/                  门面署名：头像、微标、名字、链接（改这里，别改页面）
   brand.json            唯一事实源

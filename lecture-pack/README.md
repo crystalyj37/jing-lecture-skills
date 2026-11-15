@@ -19,6 +19,7 @@
 | `scripts/crosscheck.py` | 246 | 三份对账，退出码非 0 不交付 |
 | `scripts/handout.py` | 343 | `handout.md` → 单文件网页（含打印页眉页码） |
 | `scripts/script.py` | 389 | `script.md` → A4 讲稿网页（分单元、`〔〕` 灰底、防跨页） |
+| `scripts/pack.py` | 113 | 一条命令跑完材料、讲稿、slides、audit、对账与 PDF |
 | `scripts/theme.py` | 56 | 读配色表 `../lecture-slides/assets/tokens.css`，给两份 A4 注入 |
 | `assets/example/content-map.md` | 29 | 样张清单（1 个单元） |
 | `assets/example/script.md` | 47 | 样张讲稿 |
@@ -500,16 +501,18 @@ cd ~/.workbuddy/skills/lecture-pack/assets/example
 python3 ../../scripts/crosscheck.py content-map.md \
   --script script.md --handout handout.md --deck deck.deck.md --total 6
 
-# 材料：期望 8.5 KB，1 个 h2 + 4 个 h3，目录 5 项
+# 材料：期望约 14 KB，1 个 h2 + 4 个 h3，目录 5 项
 python3 ../../scripts/handout.py handout.md -o /tmp/h.html
 
-# 讲稿：期望 7.4 KB，1 个单元，元信息「全文约 552 字 ≈ 2.3 分钟」
+# 讲稿：期望约 13 KB，1 个单元，元信息「全文约 552 字 ≈ 2.3 分钟」
 python3 ../../scripts/script.py script.md -o /tmp/s.html
 
-# slides：期望 2 屏 55.5 KB，audit 0 error / 0 warn
+# slides：期望 2 屏约 69 KB，audit 0 error / 0 warn
 python3 ~/.workbuddy/skills/lecture-slides/scripts/build.py deck.deck.md -o /tmp/d.html
 python3 ~/.workbuddy/skills/lecture-slides/scripts/audit.py /tmp/d.html
 ```
+
+上面四步也可以一条命令跑完：`python3 ../../scripts/pack.py . -o /tmp/dist --total 6 --pdf`。
 
 打印两份 PDF 并体检（`pdftotext` 来自 poppler，macOS 可用 `brew install poppler`）：
 

@@ -68,13 +68,22 @@ handout.pdf / script.pdf  ← 打印：A4、有页眉页码、逐页不出界
 | `scripts/handout.py` | `handout.md` → 单文件网页（单栏、可打印、自动目录、图片内嵌） |
 | `scripts/script.py` | `script.md` → A4 讲稿网页（分单元、`〔〕` 灰底、页眉页码） |
 | `scripts/crosscheck.py` | 三份对账 |
+| `scripts/pack.py` | 一条命令跑完：材料 → 讲稿 → slides → audit → 对账 →（`--pdf`）打印 |
 | `scripts/theme.py` | 配色表读取器：拿 `../lecture-slides/assets/tokens.css` 注入两份 A4 |
 
 配色表不在本 skill：`../lecture-slides/assets/tokens.css`（单主题「墨水经典」，54 个变量）。
 `theme.py` 负责把它注入两份 A4，并用别名把 `--paper/--ink/--line` 指到 A4 那一档。
 **不要在本 skill 的 CSS 里写新的 hex**，也不要在 `:root` 里另起一套颜色。
 
-### 四个工具
+### 工具
+
+四份源稿放同一目录时，优先用一条命令跑完（产物在 `<目录>/dist/`，任一步没过退出码 1）：
+
+```bash
+python3 <SKILL>/scripts/pack.py <目录> --total 90 --pdf
+```
+
+单独跑某一步：
 
 ```bash
 # 材料：md → 网页
@@ -88,7 +97,7 @@ python3 <SKILL>/scripts/crosscheck.py content-map.md \
   --script script.md --handout handout.md --deck deck.deck.md --total 90
 
 # slides：交给 lecture-slides
-python3 ~/.workbuddy/skills/lecture-slides/scripts/build.py deck.deck.md -o deck.html
+python3 <SKILL>/../lecture-slides/scripts/build.py deck.deck.md -o deck.html
 ```
 
 出 PDF（材料与讲稿同一条命令，只是换文件）：
