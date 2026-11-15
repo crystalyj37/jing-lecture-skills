@@ -406,8 +406,8 @@ def auto_toc(screens):
     return "\n".join(rows)
 
 
-def build(md_path, out_path, check_only=False, tokens=None):
-    text = md_path.read_text(encoding="utf-8")
+def build(md_path, out_path, check_only=False, tokens=None, page_title=None):
+    text = md_path.read_text(encoding="utf-8-sig")
     meta, rest = parse_meta(text)
     screens = split_screens(rest)
     if not screens:
@@ -432,7 +432,7 @@ def build(md_path, out_path, check_only=False, tokens=None):
     doc = (shell
            .replace("{{MATH_CSS}}", katex_css([t for t, _ in items]) if items else "")
            .replace("{{TOKENS}}", load_tokens(tokens))
-           .replace("{{TITLE}}", html.escape(meta.get("title", md_path.stem)))
+           .replace("{{TITLE}}", html.escape(page_title or meta.get("title") or re.sub(r"(\.deck)?\.md$", "", md_path.name)))
            .replace("{{SCREENS}}", "\n\n".join(parts))
            .replace("{{TOC}}", auto_toc(screens)))
     if re.search(r"\{\{[A-Z_]+\}\}", doc):
@@ -443,6 +443,7 @@ def build(md_path, out_path, check_only=False, tokens=None):
         print("[build] 干跑：%d 屏，%d 字节" % (len(screens), len(doc.encode())))
         return doc
 
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(doc, encoding="utf-8")
     print("[build] 写出 %s（%d 屏，%.1f KB）"
           % (out_path, len(screens), len(doc.encode()) / 1024))
@@ -455,13 +456,14 @@ def main():
     ap.add_argument("-o", "--out", help="输出 html 路径")
     ap.add_argument("--check-only", action="store_true", help="只干跑，不写文件")
     ap.add_argument("--tokens", help="另指定配色表（默认 <skill>/assets/tokens.css）")
+    ap.add_argument("--title", help="页面 <title>，默认取 front matter 的 title")
     a = ap.parse_args()
 
     src = Path(a.src).resolve()
     if not src.exists():
         sys.exit("[build] 源稿不存在：%s" % src)
-    out = Path(a.out).resolve() if a.out else src.with_suffix(".html")
-    build(src, out, a.check_only, a.tokens)
+    out = Path(a.out).resolve() if a.out else src.with_name(re.sub(r"(\.deck)?\.md$", "", src.name) + ".html")
+    build(src, out, a.check_only, a.tokens, a.title)
 
 
 if __name__ == "__main__":

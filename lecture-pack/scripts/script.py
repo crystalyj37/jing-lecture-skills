@@ -370,7 +370,7 @@ def main():
     src = Path(a.src).resolve()
     if not src.exists():
         sys.exit("源文件不存在：%s" % src)
-    md = src.read_text(encoding="utf-8")
+    md = src.read_text(encoding="utf-8-sig")
 
     title, body = build(md, a.one_unit_per_page)
     doc = TEMPLATE.format(
@@ -381,6 +381,7 @@ def main():
                           one_per_page=a.one_unit_per_page))
 
     out = Path(a.out).resolve() if a.out else src.with_suffix(".html")
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
     print("[script] 写出 %s（%.1f KB）" % (out, len(doc.encode()) / 1024))
 

@@ -220,7 +220,7 @@ def main():
     p = Path(sys.argv[1]).resolve()
     if not p.exists():
         sys.exit("文件不存在：%s" % p)
-    text = p.read_text(encoding="utf-8")
+    text = p.read_text(encoding="utf-8-sig")
 
     if p.suffix.lower() in (".md", ".markdown"):
         check_source(text)

@@ -205,7 +205,8 @@ python3 scripts/build.py 课程.deck.md --check-only    # 干跑，只看屏数�
 python3 scripts/audit.py 课程.html                    # 退出码 0 才算过
 ```
 
-`build.py` 不传 `-o` 时输出同目录同名 `.html`。
+`build.py` 不传 `-o` 时输出同目录同名 `.html`（`课程.deck.md` → `课程.html`），输出目录不存在会自动建；
+`--title` 可覆盖 front matter 的标题。源稿带 BOM（Windows 记事本存的）也能正常读。
 
 ---
 
