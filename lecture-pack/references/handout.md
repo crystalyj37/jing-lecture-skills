@@ -83,7 +83,7 @@ python3 scripts/handout.py handout.md -o handout.html
 ```
 
 支持：标题、段落、列表、表格、引用、代码、粗体、链接、图片、分隔线。
-**不支持**：脚注语法、数学公式。要公式就写进 `<span class="math">` 或改用 slides 的 KaTeX 方案。
+**不支持**：脚注语法。**公式**：块公式写独占一段的 `$$…$$`，行内写 `\(…\)`，构建期用 KaTeX 排好（需要 node；没有 node 时报错，或加 `--no-math` 保留原文）。细节见 README「公式」。
 
 ## 打印
 

@@ -23,6 +23,7 @@ import re
 import sys
 from pathlib import Path
 
+import mathx
 import theme
 
 WPM = 240          # 与 crosscheck.py 保持一致
@@ -365,16 +366,20 @@ def main():
                     help="每个单元从新页起（一单元一页，翻页与讲稿对齐）")
     ap.add_argument("--no-print-marks", action="store_true", help="打印时不加页眉页脚")
     ap.add_argument("--tokens", help="另指定配色表（默认 lecture-slides/assets/tokens.css）")
+    ap.add_argument("--no-math", action="store_true", help="不排公式，$$...$$ 与 \\(...\\) 原样保留（没有 node 时用）")
     a = ap.parse_args()
 
     src = Path(a.src).resolve()
     if not src.exists():
         sys.exit("源文件不存在：%s" % src)
-    md = src.read_text(encoding="utf-8-sig")
+    md, items = mathx.extract(src.read_text(encoding="utf-8-sig"))
+    fill, math_css = mathx.render(items, not a.no_math, "script")
+    raw, _ = mathx.render(items, False, "script")
 
     title, body = build(md, a.one_unit_per_page)
+    title, body = raw(title), fill(body)
     doc = TEMPLATE.format(
-        title=html.escape(title), css=CSS.replace("{{TOKENS}}", theme.css(a.tokens)), body=body,
+        title=html.escape(title), css=CSS.replace("{{TOKENS}}", theme.css(a.tokens)) + math_css, body=body,
         page_css=page_css(title,
                           head=None if a.no_print_marks else "right",
                           foot=None if a.no_print_marks else "center",

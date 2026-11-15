@@ -30,6 +30,7 @@ def main():
     ap.add_argument("--pdf", action="store_true", help="用本机 Chrome 打印 handout / script 的 PDF")
     ap.add_argument("--slides-pdf", nargs="?", const="final", choices=("final", "steps"),
                     help="slides 也出 PDF：final 每屏最终态一页（默认），steps 一步一页")
+    ap.add_argument("--no-math", action="store_true", help="材料与讲稿不排公式，原样保留（没有 node 时用）")
     a = ap.parse_args()
 
     src = Path(a.dir).resolve()
@@ -50,10 +51,11 @@ def main():
         sys.exit("[pack] 找不到 %s；lecture-slides 要和 lecture-pack 并排放" % (SLIDES / "build.py"))
 
     py, steps, failed = sys.executable, [], []
+    nm = ["--no-math"] if a.no_math else []
     if "handout.md" in f:
-        steps.append(("材料", [py, HERE / "handout.py", f["handout.md"], "-o", out / "handout.html"]))
+        steps.append(("材料", [py, HERE / "handout.py", f["handout.md"], "-o", out / "handout.html"] + nm))
     if "script.md" in f:
-        steps.append(("讲稿", [py, HERE / "script.py", f["script.md"], "-o", out / "script.html"]))
+        steps.append(("讲稿", [py, HERE / "script.py", f["script.md"], "-o", out / "script.html"] + nm))
     if deck:
         html = out / (deck.name[:-len(".deck.md")] + ".html")
         steps.append(("slides", [py, SLIDES / "build.py", deck, "-o", html]))

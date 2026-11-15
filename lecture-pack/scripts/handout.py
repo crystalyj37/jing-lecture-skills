@@ -23,6 +23,7 @@ import re
 import sys
 from pathlib import Path
 
+import mathx
 import theme
 
 CSS = """
@@ -315,20 +316,23 @@ def main():
     ap.add_argument("--no-print-marks", action="store_true",
                     help="打印时不加页眉页脚（默认带标题与页码）")
     ap.add_argument("--tokens", help="另指定配色表（默认 lecture-slides/assets/tokens.css）")
+    ap.add_argument("--no-math", action="store_true", help="不排公式，$$...$$ 与 \\(...\\) 原样保留（没有 node 时用）")
     a = ap.parse_args()
 
     src = Path(a.src).resolve()
     if not src.exists():
         sys.exit("源文件不存在：%s" % src)
-    md = src.read_text(encoding="utf-8-sig")
+    md, items = mathx.extract(src.read_text(encoding="utf-8-sig"))
+    fill, math_css = mathx.render(items, not a.no_math, "handout")
+    raw, _ = mathx.render(items, False, "handout")
 
     title = a.title
     if not title:
         m = re.search(r"^#\s+(.+)$", md, re.M)
-        title = m.group(1).strip() if m else src.stem
+        title = raw(m.group(1).strip()) if m else src.stem
 
-    body = convert(md, src.parent, want_toc=not a.no_toc)
-    css = CSS.replace("{{TOKENS}}", theme.css(a.tokens))
+    body = fill(convert(md, src.parent, want_toc=not a.no_toc))
+    css = CSS.replace("{{TOKENS}}", theme.css(a.tokens)) + math_css
     doc = TEMPLATE.format(title=html.escape(title), css=css, body=body,
                           page_css=page_css(title,
                                             head=None if a.no_print_marks else "right",

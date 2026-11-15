@@ -19,14 +19,15 @@
 | `scripts/crosscheck.py` | 246 | 三份对账，退出码非 0 不交付 |
 | `scripts/handout.py` | 343 | `handout.md` → 单文件网页（含打印页眉页码） |
 | `scripts/script.py` | 389 | `script.md` → A4 讲稿网页（分单元、`〔〕` 灰底、防跨页） |
-| `scripts/pack.py` | 98 | 一条命令跑完材料、讲稿、slides、audit、对账与 PDF（`--slides-pdf` 连 slides 一起） |
+| `scripts/pack.py` | 100 | 一条命令跑完材料、讲稿、slides、audit、对账与 PDF（`--slides-pdf` 连 slides 一起） |
+| `scripts/mathx.py` | 70 | 材料与讲稿里的公式：调 lecture-slides 的构建期 KaTeX，`--no-math` 可关 |
 | `scripts/theme.py` | 56 | 读配色表 `../lecture-slides/assets/tokens.css`，给两份 A4 注入 |
 | `assets/example/content-map.md` | 29 | 样张清单（1 个单元） |
 | `assets/example/script.md` | 47 | 样张讲稿 |
 | `assets/example/handout.md` | 51 | 样张材料 |
 | `assets/example/deck.deck.md` | 75 | 样张 slides 源稿（2 屏） |
 
-依赖：**只有 Python 3 标准库**。没有 pip 包，不需要 node。
+依赖：**只有 Python 3 标准库**，没有 pip 包。只有材料/讲稿里写了公式才需要 node（和 slides 同一套构建期渲染）。
 slides 那一步、以及两份 A4 的配色表，都依赖同级目录 `../lecture-slides/`。
 
 ---
@@ -207,7 +208,28 @@ python3 scripts/handout.py handout.md -o handout.html --title "示例分享" --n
 标题 h1–h4 / 段落 / 无序与有序列表 / 管道表格 / 引用 / 代码块 / 分隔线 /
 行内 `**粗体**` `` `代码` `` `[链接](url)` `![图](path)`。
 
-**不支持**：脚注语法、数学公式、单元格内转义 `\|`、表格对齐标记（`:---:` 会被当成分隔行忽略）。
+**不支持**：脚注语法、单元格内转义 `\|`、表格对齐标记（`:---:` 会被当成分隔行忽略）。公式见下一节。
+
+### 公式（可选）
+
+材料和讲稿都能写公式，和 slides 用同一个构建期渲染器（`../lecture-slides/scripts/build.py` → node → KaTeX），
+产物里是排好的静态 HTML，打印成 PDF 也正确：
+
+```markdown
+$$
+1-(1-\alpha)^{20} \approx 0.64
+$$
+
+每次水平 \(\alpha=0.05\)，表格单元格里也能写 \(\alpha/m\)。
+```
+
+- **块公式**：`$$ … $$` 独占一段（可以跨行）；**行内**：`\( … \)`。写在句中的 `$$…$$` 和单个 `$…$` 都不认，
+  原样输出——中文材料里 `$` 常是金额，不拿它当分隔符
+- 代码块里的不动；写错公式时构建直接报错，指出是哪一条
+- **没有 node**：和 slides 一样明确报错、退出码 1；加 `--no-math` 则原样保留公式源码，照常出页面
+- 有公式时页面会内嵌 KaTeX 样式与裁剪后的字体，体积从十几 KB 涨到约 280 KB（实测）；没写公式的材料不受影响，产物逐字节不变
+- 讲稿也支持，但台上念的是话，公式能少则少；要给听众看的推导放材料
+- 不支持：公式编号与交叉引用（`\label`/`\eqref`），要编号手写 `\tag{1}`
 
 ### 目录的触发条件
 
@@ -270,7 +292,7 @@ if want_toc and len(toc) >= 3:
 **② `<span class="math">` 只是字体**
 
 `.math` 只给了 `Times New Roman` + 斜体。它不排版公式，`x^2` 不会变成上标。
-真公式用 slides 那边的 KaTeX 方案，或直接写 Unicode。
+真公式写 `$$…$$` 或 `\(…\)`（见上文「公式」）。
 
 ## 7. script.py（讲稿的 A4 排版）
 
@@ -459,7 +481,7 @@ TOL = 0.25    # 单单元允许超出 25%
 1. **不做内容取舍**。讲什么、砍什么由人定；这个 skill 只保证三份一致。
 2. **不代写观点**。素材从用户的讲稿、论文、课程里取。
 3. **不生成 slides 版式**。交给 `lecture-slides`。
-4. **handout.py 不是完整 Markdown 实现**。脚注、公式、单元格转义都没有。
+4. **handout.py 不是完整 Markdown 实现**。脚注、单元格转义都没有；公式只认 `$$…$$` 独占一段与 `\(…\)`。
 5. **没有 Word 输出**。要 .docx 把 md 交给 `workbuddy-docx`，不要在这边加转换。
 
 **对账查不出的（都是实测确认的）**
