@@ -146,7 +146,7 @@ python3 scripts/audit.py 课程.html
 | 按空格到最后一步就不动了 | `steps` 比最大 `data-step` 大 |
 | 某一步永远不出现 | `data-step` 比 `steps` 大，或写成了 `0` |
 | 表格列错位 | 某行 `span` 少一个 |
-| 整屏字变成裸文字 | class 名写错（如 `tbl` 写成 `table`） |
+| 整屏字变成裸文字 | class 名写错（如 `tbl` 写成 `table`）；`audit.py` 会提示「未知类名 .table，是不是 .tbl？」 |
 | 公式挤成一团、符号错位 | 用了 `::: fml` 之外的手写 `<sub><sup>`，或 KaTeX 样式没注入 |
 | build 报「有 N 条公式写错了」 | LaTeX 拼错；按提示里的命令名改 |
 | 打开是空白 | 不是 `file://` 打开，或 `<script>` 被编辑器改坏 |

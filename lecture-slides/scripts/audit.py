@@ -12,9 +12,13 @@ lecture-slides audit：交付前的静态体检。
 退出码：0 = 无 error；1 = 有 error。
 """
 
+import argparse
+import difflib
 import re
 import sys
 from pathlib import Path
+
+ASSETS = Path(__file__).resolve().parent.parent / "assets"
 
 # 屏幕安全区：1920×1080，底部工具条 40px
 SCREEN_W, SCREEN_H, BAR_H = 1920, 1080, 40
@@ -99,6 +103,33 @@ def check_source(text):
             warn("第 %d 行有组合符号（%s），中文字体里会盖歪；"
                  "公式里写 \\hat{p}，说明文字里写 \\(\\hat p\\)"
                  % (i, line.strip()[:36]))
+
+
+def known_classes(doc):
+    """壳与配色表里的类名用来给建议；再加上 KaTeX 会生成的类名、本文件 <style>/<script> 里的，都算「已知」。"""
+    names = lambda t: set(re.findall(r"\.(-?[A-Za-z_][\w-]*)", t)) | set(re.findall(r"""['"]([A-Za-z_][\w-]*)['"]""", t))
+    read = lambda f: (ASSETS / f).read_text(encoding="utf-8") if (ASSETS / f).exists() else ""
+    shell = names(read("deck-shell.html") + read("tokens.css"))
+    extra = names(read("vendor/katex.css") + read("vendor/katex.min.js")
+                  + "".join(re.findall(r"(?s)<(?:script|style)\b.*?</(?:script|style)>", doc)))
+    return shell | extra, shell
+
+
+def check_classes(doc, strict):
+    """屏内写错类名不会报错，只会静默变成裸文字；这里按已知类名比一遍。"""
+    known, pool = known_classes(doc)
+    body = "".join(re.findall(r'<section class="screen".*?</section>', doc, re.S)) or doc
+    body = re.sub(r"(?s)<(script|style)\b.*?</\1>", "", body)
+    seen = {}
+    for attr in re.findall(r'\bclass="([^"]*)"', body):
+        for c in attr.split():
+            if c not in known:
+                seen[c] = seen.get(c, 0) + 1
+    for c, n in sorted(seen.items()):
+        near = difflib.get_close_matches(c, pool, n=1, cutoff=0.6)
+        msg = "未知类名 .%s（%d 处），壳里没有它的样式%s" % (
+            c, n, "；是不是 .%s？" % near[0] if near else "")
+        (err if strict else warn)(msg)
 
 
 def check_html(doc):
@@ -215,9 +246,11 @@ def check_vars(doc):
 
 
 def main():
-    if len(sys.argv) < 2:
-        sys.exit("用法：python3 audit.py <deck.md|deck.html>")
-    p = Path(sys.argv[1]).resolve()
+    ap = argparse.ArgumentParser(description="lecture-slides 交付前静态体检")
+    ap.add_argument("src", help="deck.md 或 deck.html")
+    ap.add_argument("--strict", action="store_true", help="未知类名按 error 处理")
+    a = ap.parse_args()
+    p = Path(a.src).resolve()
     if not p.exists():
         sys.exit("文件不存在：%s" % p)
     text = p.read_text(encoding="utf-8-sig")
@@ -231,6 +264,7 @@ def main():
         info("单文件 %.0f KB" % size)
         if size > 4 * 1024:
             warn("超过 4 MB，首次打开会慢；考虑把大视频改成外链")
+    check_classes(text, a.strict)
 
     for m in infos:
         print("  信息  " + m)

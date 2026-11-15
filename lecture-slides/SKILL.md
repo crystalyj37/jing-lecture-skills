@@ -65,7 +65,7 @@ agent_created: true
 ### 2. 写源稿
 
 照 `references/authoring.md`。屏内正文直接是 HTML，版式从 `references/layouts.md`
-整段复制。**不要自己发明 class**：写错了不报错，只会在投影上变成裸文字。
+整段复制。**不要自己发明 class**：写错了页面不报错，只会在投影上变成裸文字。`audit.py` 会把壳里没有的类名列成 warn 并给出最接近的名字（如 `.table` → `.tbl`）；交付前想让它拦住，加 `--strict`。
 起手时先看一遍 `assets/example.deck.md` —— 两屏，含表格分步、流程链、备注三种写法。
 
 ```markdown
