@@ -1,6 +1,6 @@
 ---
 name: lecture-slides
-description: "把一份讲稿做成可放映的单文件 HTML 演示页：流式排版、按空格分步出内容、演讲者备注（S 键）、阅读模式、单文件离线可开。适用于讲课/分享/答辩的 slides，尤其是单屏内容密度大、需要「讲的时候一行一行出、课后还能当材料读」的场景。当用户说「做个讲座 HTML」「把这门课做成 slides」「这页要能分步演示」「要演讲者备注」时使用；也用于修改已有的 .deck.md / 由本 skill 生成的 html。只做 slides；要同时出讲稿与详细材料，用 lecture-pack。不适用于 .pptx（转 workbuddy-pptx）、Bento 画布式演示（转 bento-slides）、资料库学习页（转 library）。关键词：lecture-slides、讲座 HTML、讲课 slides、单文件演示、分步揭示、演讲者备注、阅读模式。"
+description: "把一份讲稿做成可放映的单文件 HTML 演示页：流式排版、按空格分步出内容、演讲者备注（S 键）、阅读模式、单文件离线可开。适用于讲课/分享/答辩的 slides，尤其是单屏内容密度大、需要「讲的时候一行一行出、课后还能当材料读」的场景。当用户说「做个讲座 HTML」「把这门课做成 slides」「这页要能分步演示」「要演讲者备注」时使用；也用于修改已有的 .deck.md / 由本 skill 生成的 html。只做 slides；要同时出讲稿与详细材料，用 lecture-pack。不适用于 .pptx（转 workbuddy-pptx）、Bento 画布式演示（转 bento-slides）、资料库学习页（转 library）。也适合带 LaTeX 公式、可切换数据图的课件与学术报告。关键词：lecture-slides、讲座 HTML、讲课 slides、课件、组会/学术报告、单文件演示、分步揭示、演讲者备注、阅读模式、LaTeX 公式、HTML slides、speaker notes。"
 agent_created: true
 ---
 

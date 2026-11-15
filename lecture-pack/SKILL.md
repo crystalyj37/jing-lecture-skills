@@ -1,6 +1,6 @@
 ---
 name: lecture-pack
-description: "把同一个议题/课程/分享写成两到三份互相咬合的文件：① 可分享给听众或学生的详细材料（长文或网页）；② 可放映的 HTML slides；③ 讲者自己的讲稿（口播句 + 时间 + 现场提示）。适用于要上台讲、同时又要把内容留给听众的场合（讲座、公开课、答辩、培训）。当用户说「一份内容出两版/三版」「同时要讲稿和材料」「讲座材料整理成可分享的」时使用。产出经 crosscheck 对账，保证三份的单元、顺序、数字一致。slides 部分交给 lecture-slides 构建。不适用于只做 slides（用 lecture-slides）、只做 Word/PPT 单件（用 workbuddy-docx / workbuddy-pptx）。关键词：一份内容三版、讲稿+材料+slides、讲座材料、handout、lecture pack、三产物同步。"
+description: "把同一个议题/课程/分享写成两到三份互相咬合的文件：① 可分享给听众或学生的详细材料（长文或网页）；② 可放映的 HTML slides；③ 讲者自己的讲稿（口播句 + 时间 + 现场提示）。适用于要上台讲、同时又要把内容留给听众的场合（讲座、公开课、答辩、培训）。当用户说「一份内容出两版/三版」「同时要讲稿和材料」「讲座材料整理成可分享的」时使用。产出经 crosscheck 对账，保证三份的单元、顺序、数字一致。slides 部分交给 lecture-slides 构建。不适用于只做 slides（用 lecture-slides）、只做 Word/PPT 单件（用 workbuddy-docx / workbuddy-pptx）。四份源稿齐了用 scripts/pack.py 一条命令出全套并对账。关键词：一份内容三版、讲稿+材料+slides、讲座材料、讲义、课件配讲稿、handout、speaker script、lecture pack、三产物同步。"
 agent_created: true
 ---
 
