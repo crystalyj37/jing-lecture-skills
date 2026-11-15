@@ -158,6 +158,29 @@ def _consume_block(body, tag, cls, render=None):
 FML_SEP = re.compile(r"^(?P<tex>.*)\s+\|\s+(?P<cap>.*)$")
 FML_BLOCK = re.compile(r"^:::\s*fml\s*\n(.*?)\n\s*:::\s*$", re.S | re.M)
 INLINE_MATH = re.compile(r"\\\((.+?)\\\)", re.S)
+# <script>/<style> 段落里的 \( 不当作公式：c4 的 canvas 脚本里有反斜杠转义。
+RAW_SPLIT = re.compile(r"(<script\b.*?</script>|<style\b.*?</style>)", re.S | re.I)
+
+
+def _strip_raw(body):
+    """去掉脚本、样式与 ::: fml 块，剩下的才是允许写行内公式的区域。"""
+    return RAW_SPLIT.sub("", FML_BLOCK.sub("", body))
+
+
+def _apply_inline(text, table):
+    r"""把屏内 HTML 里的 \(...\) 换成构建期排好的行内公式。"""
+    def repl(m):
+        got = table.get((m.group(1).strip(), False))
+        return got if got else m.group(0)
+    out = []
+    for seg in RAW_SPLIT.split(text):
+        low = seg[:7].lower()
+        if low.startswith("<script") or low.startswith("<style"):
+            out.append(seg)
+        else:
+            out.append(INLINE_MATH.sub(repl, seg))
+    return "".join(out)
+
 
 
 def scan_fml(body):
@@ -178,6 +201,9 @@ def scan_fml(body):
             items.append((tex, True))
             for im in INLINE_MATH.finditer(cap):
                 items.append((im.group(1).strip(), False))
+    # 屏内 HTML 里的行内公式（说明文字、图注、数字块）
+    for im in INLINE_MATH.finditer(_strip_raw(body)):
+        items.append((im.group(1).strip(), False))
     return items
 
 
@@ -364,6 +390,7 @@ def _inline(s):
 def build_body(body, math_table):
     body = _consume_block(body, "note", "spk", render=note_md)
     body = _consume_fml(body, math_table)
+    body = _apply_inline(body, math_table)
     # ::: md 块内做转换
     def md_block(m):
         return md_lite(m.group(1))

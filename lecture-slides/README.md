@@ -37,7 +37,7 @@ deck.deck.md
     ├─ ① 读 front matter（--- 包起来的 title）
     ├─ ② 切屏：按 ::: screen 深度计数
     ├─ ③ 收内层块：::: note → <div class="spk">，::: md → 轻量 md
-    ├─ ④ 公式：扫出 ::: fml 的 LaTeX，一次 node 调用交给 KaTeX 排成静态 HTML
+    ├─ ④ 公式：扫出 ::: fml 与屏内的 \(...\)，一次 node 调用交给 KaTeX 排成静态 HTML
     ├─ ⑤ 生成 <section class="screen" id data-steps data-title>
     ├─ ⑥ 填壳：{{MATH_CSS}} {{TOKENS}} {{TITLE}} {{SCREENS}} {{TOC}}
     └─ ⑦ 直接写单文件（无第三方运行时）

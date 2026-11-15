@@ -110,8 +110,9 @@ class Brand:
 
         r["demo"] = (
             "- [slides 示例](%sdeck.html)（按空格推进）\n"
+            "- [九屏样张](%sshowcase.html)（公式、数据图、可拖参数）\n"
             "- [材料 PDF](%shandout.pdf)\n"
-            "- [讲稿 PDF](%sscript.pdf)" % (self.site, self.site, self.site)
+            "- [讲稿 PDF](%sscript.pdf)" % (self.site, self.site, self.site, self.site)
         )
 
         r["clone-md"] = (

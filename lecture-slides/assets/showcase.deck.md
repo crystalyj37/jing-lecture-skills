@@ -9,7 +9,7 @@ title: 示例 · 30 个样本凭什么够
   <p class="lead">不是经验法则，是一条能算出来的定理。<span class="hl">看懂这一条，你就知道「差多少」该怎么估。</span></p>
 </header>
 
-<div class="big">1 / √n<small>误差随样本量收缩的速度</small></div>
+<div class="big">\(1/\sqrt{n}\)<small>误差随样本量收缩的速度</small></div>
 <p class="bignote">样本量翻四倍，误差才减半。这比「30 就够」有用得多——它同时告诉你 30 什么时候不够、什么时候绰绰有余。</p>
 ::: note
 开场不要报公式。先让他们猜：10 个样本和 1000 个样本，结论的误差差几倍？多数人会猜 100 倍，实际是 10 倍。
@@ -25,9 +25,9 @@ title: 示例 · 30 个样本凭什么够
 </header>
 
 <div class="fig">
-  <svg viewBox="0 0 1200 470" role="img" aria-label="n 为 10、30、100、1000 时，样本均值的 95% 落点范围逐级收窄">
+  <svg viewBox="180 20 980 440" role="img" aria-label="n 为 10、30、100、1000 时，样本均值的 95% 落点范围逐级收窄">
     <line x1="700" y1="66" x2="700" y2="440" style="stroke:var(--line);stroke-width:2;stroke-dasharray:8 10"/>
-    <text x="700" y="46" text-anchor="middle" style="fill:var(--muted);font-size:24px;letter-spacing:.12em">μ　真 值</text>
+    <text x="700" y="46" text-anchor="middle" style="fill:var(--muted);font-size:24px;letter-spacing:.12em">μ 真值</text>
 
     <g data-step="1">
     <rect x="420" y="96" width="560" height="52" rx="4" style="fill:var(--accent);opacity:.16"/>
@@ -57,7 +57,7 @@ title: 示例 · 30 个样本凭什么够
     <text x="1004" y="414" style="fill:var(--muted);font-size:24px;font-variant-numeric:tabular-nums">± 0.06</text>
     </g>
   </svg>
-  <p class="figcap">同一总体、同一估计量，只改每次抽多少个。杠的长度按 1/√n 缩。</p>
+  <p class="figcap">同一总体、同一估计量，只改每次抽多少个。杠的长度按 \(1/\sqrt{n}\) 缩。</p>
 </div>
 ::: note
 先只讲第一条杠，问他们「如果你只抽 10 个，你的结论有可能偏到哪里」。再往下走一步。
@@ -216,46 +216,76 @@ Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}\ \longrightarrow\ N(0,1) | (3)　中心极
 ::: screen id=c9 steps=0 title="二 · 换一种画法"
 <header class="hd tight">
   <div class="kicker">二 · 换一种画法</div>
-  <h2>同一组数，两种坐标</h2>
+  <h2>同一条曲线，换个纵轴就成了直线</h2>
+  <p class="lead">左右两边的横轴是同一套刻度，都按倍数排。<span class="hl">变的只有纵轴。</span></p>
 </header>
 
-<div class="chart">
-  <div class="ctl">
-    <span class="lab">纵轴</span>
-    <button class="on" data-st="lin">线性</button>
-    <button data-st="log">对数</button>
+<div class="pair">
+  <div class="fig">
+    <svg viewBox="0 0 560 410" role="img" aria-label="纵轴线性时，均值的标准误随样本量增大而下降，前几个点掉得很快，后面几乎贴地">
+      <g style="stroke:var(--line-soft);stroke-width:1.5;stroke-dasharray:6 8">
+        <line x1="70" y1="85.7" x2="540" y2="85.7"/>
+        <line x1="70" y1="177.1" x2="540" y2="177.1"/>
+        <line x1="70" y1="268.6" x2="540" y2="268.6"/>
+      </g>
+      <g style="stroke:var(--line);stroke-width:2">
+        <line x1="70" y1="40" x2="70" y2="360"/>
+        <line x1="70" y1="360" x2="540" y2="360"/>
+      </g>
+      <polyline points="70,70.9 160.5,193.1 259.7,268.6 350.3,307.2 449.5,331.1 540,343.3"
+        style="fill:none;stroke:var(--accent);stroke-width:4;stroke-linejoin:round;stroke-linecap:round"/>
+      <g style="fill:var(--accent)">
+        <circle cx="70" cy="70.9" r="5.5"/><circle cx="160.5" cy="193.1" r="5.5"/>
+        <circle cx="259.7" cy="268.6" r="5.5"/><circle cx="350.3" cy="307.2" r="5.5"/>
+        <circle cx="449.5" cy="331.1" r="5.5"/><circle cx="540" cy="343.3" r="5.5"/>
+      </g>
+      <g style="fill:var(--muted);font-size:17px;text-anchor:middle">
+        <text x="70" y="390">10</text><text x="160.5" y="390">30</text>
+        <text x="259.7" y="390">100</text><text x="350.3" y="390">300</text>
+        <text x="449.5" y="390">1000</text><text x="540" y="390">3000</text>
+      </g>
+      <g style="fill:var(--muted);font-size:17px;text-anchor:end">
+        <text x="58" y="366">0</text><text x="58" y="274">0.1</text>
+        <text x="58" y="183">0.2</text><text x="58" y="91">0.3</text>
+      </g>
+      <text x="70" y="22" style="fill:var(--muted);font-size:16px;letter-spacing:.08em">纵轴 线性</text>
+    </svg>
+    <p class="figcap">前几个点掉得最快，后面几乎贴着地走——「再抽也就这样了」</p>
   </div>
-  <div class="cv">
-    <div class="fig on" data-st="lin">
-      <svg viewBox="0 0 1200 520" role="img" aria-label="线性坐标下，均值的标准误随 n 增大而下降，曲线越来越平">
-        <g style="stroke:var(--line-soft);stroke-width:1.5;stroke-dasharray:6 8"><line x1="150" y1="330" x2="1150" y2="330"/><line x1="150" y1="230" x2="1150" y2="230"/><line x1="150" y1="130" x2="1150" y2="130"/></g>
-        <g style="stroke:var(--line);stroke-width:2">
-          <line x1="150" y1="80" x2="150" y2="430"/>
-          <line x1="150" y1="430" x2="1150" y2="430"/>
-        </g>
-        <polyline points="150,114 350,247 550,330 750,372 950,398 1150,412" style="fill:none;stroke:var(--accent);stroke-width:4;stroke-linejoin:round;stroke-linecap:round"/>
-        <g style="fill:var(--accent)"><circle cx="150" cy="114" r="6"/><circle cx="350" cy="247" r="6"/><circle cx="550" cy="330" r="6"/><circle cx="750" cy="372" r="6"/><circle cx="950" cy="398" r="6"/><circle cx="1150" cy="412" r="6"/></g>
-        <g style="fill:var(--muted);font-size:22px;text-anchor:middle"><text x="150" y="470">10</text><text x="350" y="470">30</text><text x="550" y="470">100</text><text x="750" y="470">300</text><text x="950" y="470">1000</text><text x="1150" y="470">3000</text></g>
-        <g style="fill:var(--muted);font-size:22px;text-anchor:end"><text x="132" y="438">0</text><text x="132" y="338">0.1</text><text x="132" y="238">0.2</text><text x="132" y="138">0.3</text></g>
-      </svg>
-    </div>
-    <div class="fig" data-st="log">
-      <svg viewBox="0 0 1200 520" role="img" aria-label="对数坐标下，同一组标准误落在一条直线上，说明按 n 的平方根倒数下降">
-        <g style="stroke:var(--line-soft);stroke-width:1.5;stroke-dasharray:6 8"><line x1="150" y1="111" x2="1150" y2="111"/><line x1="150" y1="230" x2="1150" y2="230"/><line x1="150" y1="361" x2="1150" y2="361"/></g>
-        <g style="stroke:var(--line);stroke-width:2">
-          <line x1="150" y1="80" x2="150" y2="430"/>
-          <line x1="150" y1="430" x2="1150" y2="430"/>
-        </g>
-        <polyline points="150,105 343,165 554,230 746,290 957,355 1150,415" style="fill:none;stroke:var(--accent);stroke-width:4;stroke-linejoin:round;stroke-linecap:round"/>
-        <g style="fill:var(--accent)"><circle cx="150" cy="105" r="6"/><circle cx="343" cy="165" r="6"/><circle cx="554" cy="230" r="6"/><circle cx="746" cy="290" r="6"/><circle cx="957" cy="355" r="6"/><circle cx="1150" cy="415" r="6"/></g>
-        <g style="fill:var(--muted);font-size:22px;text-anchor:middle"><text x="150" y="470">10</text><text x="343" y="470">30</text><text x="554" y="470">100</text><text x="746" y="470">300</text><text x="957" y="470">1000</text><text x="1150" y="470">3000</text></g>
-        <g style="fill:var(--muted);font-size:22px;text-anchor:end"><text x="132" y="119">0.3</text><text x="132" y="238">0.1</text><text x="132" y="369">0.03</text></g>
-      </svg>
-    </div>
-  </div>
-  <div class="fcap">纵轴：均值的标准误 σ/√n；横轴：每次抽多少个数。线性轴上看着「再抽也就这样了」，对数轴上才看得出它一直在按幂律下降</div>
-</div>
 
+  <div class="fig">
+    <svg viewBox="0 0 560 410" role="img" aria-label="纵轴取对数后，同一组数据落在一条直线上，说明标准误按样本量的平方根倒数下降">
+      <g style="stroke:var(--line-soft);stroke-width:1.5;stroke-dasharray:6 8">
+        <line x1="70" y1="45.9" x2="540" y2="45.9"/>
+        <line x1="70" y1="169.2" x2="540" y2="169.2"/>
+        <line x1="70" y1="304.3" x2="540" y2="304.3"/>
+      </g>
+      <g style="stroke:var(--line);stroke-width:2">
+        <line x1="70" y1="40" x2="70" y2="360"/>
+        <line x1="70" y1="360" x2="540" y2="360"/>
+      </g>
+      <polyline points="70,40 160.5,101.6 259.7,169.2 350.3,230.8 449.5,298.4 540,360"
+        style="fill:none;stroke:var(--accent);stroke-width:4;stroke-linejoin:round;stroke-linecap:round"/>
+      <g style="fill:var(--accent)">
+        <circle cx="70" cy="40" r="5.5"/><circle cx="160.5" cy="101.6" r="5.5"/>
+        <circle cx="259.7" cy="169.2" r="5.5"/><circle cx="350.3" cy="230.8" r="5.5"/>
+        <circle cx="449.5" cy="298.4" r="5.5"/><circle cx="540" cy="360" r="5.5"/>
+      </g>
+      <g style="fill:var(--muted);font-size:17px;text-anchor:middle">
+        <text x="70" y="390">10</text><text x="160.5" y="390">30</text>
+        <text x="259.7" y="390">100</text><text x="350.3" y="390">300</text>
+        <text x="449.5" y="390">1000</text><text x="540" y="390">3000</text>
+      </g>
+      <g style="fill:var(--muted);font-size:17px;text-anchor:end">
+        <text x="58" y="51">0.3</text><text x="58" y="175">0.1</text><text x="58" y="310">0.03</text>
+      </g>
+      <text x="70" y="22" style="fill:var(--muted);font-size:16px;letter-spacing:.08em">纵轴 对数</text>
+      <text x="300" y="150" style="fill:var(--accent);font-size:19px">六个点连成一条直线</text>
+      <text x="300" y="176" style="fill:var(--muted);font-size:16px">斜率就是 −1/2</text>
+    </svg>
+    <p class="figcap">纵轴也按倍数排之后，点在一条直线上——这正是 \(1/\sqrt{n}\) 的证据</p>
+  </div>
+</div>
 :::
 
 ::: screen id=c5 steps=4 title="三 · 换算成倍数"
@@ -265,7 +295,7 @@ Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}\ \longrightarrow\ N(0,1) | (3)　中心极
   <p class="lead">把公式代进去算一遍，这个反直觉就变成了常识。</p>
 </header>
 
-<div class="tbl">
+<div class="tbl t4">
   <div class="tr th"><span>每次抽 n</span><span>标准误 SE</span><span>95% 区间半宽</span><span>相对 n = 10</span></div>
   <div class="tr" data-step="1"><span>10</span><span>0.316</span><span>± 0.62</span><span>1.00×</span></div>
   <div class="tr" data-step="2"><span>30</span><span>0.183</span><span>± 0.36</span><span>0.58×</span></div>
@@ -297,7 +327,7 @@ Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}\ \longrightarrow\ N(0,1) | (3)　中心极
   <div class="col" data-step="2">
     <h3>严格一点的说法</h3>
     <p>30 的前提是总体不太偏。分布重尾或强偏时，30 远远不够。</p>
-    <p>误差按 1/√n 降：100 加到 400 才减半，100 加到 200 只减三成。</p>
+    <p>误差按 \(1/\sqrt{n}\) 降：100 加到 400 才减半，100 加到 200 只减三成。</p>
     <p>小样本能做，只是要换工具：t 分布、精确检验、贝叶斯。</p>
   </div>
 </div>
@@ -317,7 +347,7 @@ Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}\ \longrightarrow\ N(0,1) | (3)　中心极
 <div class="chain">
   <div class="st" data-step="1">
     <div class="k">① 总 体</div>
-    <b>有一个真值 μ</b>
+    <b>有一个真值 \(\mu\)</b>
     <p>你永远看不到它，只能估计。</p>
   </div>
   <div class="st" data-step="2">
@@ -347,7 +377,7 @@ Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}\ \longrightarrow\ N(0,1) | (3)　中心极
 </header>
 
 <div class="four">
-  <div class="c"><div class="t">误差按 1/√n 缩</div><span class="ghost">01</span><p class="d">样本翻四倍，误差才减半。预算谈判先用这条。</p></div>
+  <div class="c"><div class="t">误差按 \(1/\sqrt{n}\) 缩</div><span class="ghost">01</span><p class="d">样本翻四倍，误差才减半。预算谈判先用这条。</p></div>
   <div class="c"><div class="t">正态是均值的性质</div><span class="ghost">02</span><p class="d">不是总体的性质。总体越偏，越需要大 n 才看得出。</p></div>
   <div class="c"><div class="t">30 是经验，不是定理</div><span class="ghost">03</span><p class="d">偏态、重尾、整群抽样，都要重新算。</p></div>
   <div class="c"><div class="t">加样本治不了抽样偏差</div><span class="ghost">04</span><p class="d">先保证随机与独立，再谈样本量。</p></div>

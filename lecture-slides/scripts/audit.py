@@ -71,6 +71,29 @@ def check_source(text):
 
     # 组合变音符号：p̂ / x̄ / ž 这类「字母 + U+030x」在中文字体里定位是错的，
     # 帽子会飘到右下角，看起来像个撇。要让用户改写成 \(...\)，不能只靠肉眼发现。
+    # 裸根号：Unicode √ 只是一个字符，它不会把被开方的内容盖住，
+    # 看起来就是「√n」——横线没了，n 悬在旁边。凡是可见文字里的根号都应该走 \(\sqrt{}\)
+    # 或公式块；讲稿备注（::: note）里是口头说法，不排版，放行。
+    in_fml = in_note = False
+    for i, line in enumerate(text.split("\n"), 1):
+        s = line.strip()
+        if s.startswith(":::"):
+            head = s[3:].strip().split(" ")[0] if s[3:].strip() else ""
+            closing = (s == ":::")
+            if closing:
+                in_note = False
+                in_fml = False
+            elif head.startswith("fml"):
+                in_fml = True
+            elif head.startswith("note"):
+                in_note = True
+            continue
+        if in_fml or in_note:
+            continue
+        if "√" in line:
+            warn("第 %d 行有裸根号（√），不会盖住被开方的内容；"
+                 "改成 \\(\\sqrt{n}\\) 或放进 ::: fml 块" % i)
+
     for i, line in enumerate(text.split("\n"), 1):
         if re.search(r"[\u0300-\u036f]", line):
             warn("第 %d 行有组合符号（%s），中文字体里会盖歪；"

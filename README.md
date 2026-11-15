@@ -33,6 +33,7 @@
 
 <!--brand:demo-->
 - [slides 示例](https://crystalyj37.github.io/jing-lecture-skills/deck.html)（按空格推进）
+- [九屏样张](https://crystalyj37.github.io/jing-lecture-skills/showcase.html)（公式、数据图、可拖参数）
 - [材料 PDF](https://crystalyj37.github.io/jing-lecture-skills/handout.pdf)
 - [讲稿 PDF](https://crystalyj37.github.io/jing-lecture-skills/script.pdf)
 <!--brand:demo:end-->
@@ -201,6 +202,8 @@ brand/                  门面署名：头像、微标、名字、链接（改�
 scripts/
   apply_brand.py        brand.json → 页面 / README / LICENSE
 docs/                   生成的展示页与示例产物（不要手改）
+  deck.html             两屏示例 · 源稿 lecture-pack/assets/example/deck.deck.md
+  showcase.html         九屏样张 · 源稿 lecture-slides/assets/showcase.deck.md
 ```
 
 ## 换自己的署名

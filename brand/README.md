@@ -54,7 +54,7 @@ python3 scripts/apply_brand.py
 | `docs/index.html` | `<!--brand:clone-html-->` | 安装命令 |
 | `docs/index.html` | `<!--brand:footer-->` | 微标、免责尾注、三份文档链接 |
 | `README.md` | `<!--brand:sub-->` | 标题下的副标题 |
-| `README.md` | `<!--brand:demo-->` | 三个在线示例链接 |
+| `README.md` | `<!--brand:demo-->` | 四个在线示例链接 |
 | `README.md` | `<!--brand:clone-md-->` | 安装命令 |
 | `LICENSE` | 无标记 | `Copyright (c) 年份 版权人` 整行 |
 | `docs/img/` | — | 从 `brand/assets/` 复制，文件名取原文件 basename |

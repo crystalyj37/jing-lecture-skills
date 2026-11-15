@@ -389,10 +389,11 @@ html.read .stage{padding-left:190px}
 /* ============ 插图与版式容器 ============ */
 .split2{flex:1;min-height:0;display:grid;grid-template-columns:1.15fr 1fr;gap:2.4rem}
 .col{display:flex;flex-direction:column;min-height:0;justify-content:center}
-.fig{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.fig>svg{width:100%;height:100%;display:block}
+.fig{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.fig>svg{width:100%;height:auto;max-height:100%;flex:0 1 auto;display:block}
 .fig>img{width:100%;height:100%;object-fit:contain;display:block}
-.figcap{flex:none;font-size:1.22rem;color:var(--muted);text-align:center;margin-top:.55rem;letter-spacing:.02em}
+.c .t .katex{font-size:1.1em}
+.figcap{flex:none;width:100%;font-size:1.42rem;color:var(--muted);text-align:center;margin-top:.55rem;letter-spacing:.02em}
 .fig [data-step]{opacity:0;transition:opacity .35s ease}
 .fig [data-step].on{opacity:1}
 
@@ -490,6 +491,11 @@ html.read .stage{padding-left:190px}
 .tbl.c4 .tr{grid-template-columns:7.6rem 1fr 1.02fr 14.2rem;gap:1.05rem;font-size:1.32rem;padding:1.42rem .2rem}
 .tbl.c4 .tr>span:nth-child(2){color:var(--ink);font-weight:400}
 .tbl.c4 .tr>span:nth-child(3){color:var(--accent);font-weight:600}
+/* 四列表：样本量 / 标准误 / 区间 / 相对倍数 */
+.tbl.t4 .tr{grid-template-columns:13rem 15rem 14rem 1fr;gap:1.2rem;font-size:1.34rem;padding:1.05rem .2rem}
+.tbl.t4 .tr>span:nth-child(3){color:var(--ink2);font-variant-numeric:tabular-nums}
+.tbl.t4 .tr>span:nth-child(4){color:var(--accent);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.tbl.t4 .tr.th>span{color:var(--muted);font-weight:500}
 .tbl.c4 .tr.th>span{color:var(--muted);font-weight:500}
 /* 两列紧凑表 */
 .tbl.tight .tr{grid-template-columns:17rem 1fr;gap:1.3rem;font-size:1.34rem;padding:.52rem .2rem}
@@ -827,19 +833,19 @@ html.read .qrcard{max-width:420px;margin:0 auto}
 /* 产物里是构建期排好的静态 HTML，页面上没有 katex.js。 */
 /* 行数多时自动降字号：4 行及以上按 data-n 缩，避免最后一行掉出屏幕。 */
 .fmlset{flex:1;display:flex;flex-direction:column;justify-content:center;
-  max-width:64rem;margin:0 auto;width:100%;--fml-scale:1}
+  max-width:84rem;margin:0 auto;width:100%;--fml-scale:1}
 .fmlset[data-n="4"]{--fml-scale:.88}
 .fmlset[data-n="5"]{--fml-scale:.78}
 .fmlset[data-n="6"]{--fml-scale:.7}
 .fmlset[data-n="7"]{--fml-scale:.64}
-.fml{font-size:calc(2rem * var(--fml-scale));color:var(--ink);text-align:center;
+.fml{font-size:calc(2.4rem * var(--fml-scale));color:var(--ink);text-align:center;
   padding:.2rem 0 .1rem}
 .fml .katex-display{margin:0}
 .fml .katex{font-size:1.05em}
 .fmlrow{padding:calc(1.05rem * var(--fml-scale)) 0 calc(.9rem * var(--fml-scale));
   border-bottom:1px dashed var(--line)}
 .fmlrow:last-child{border-bottom:0}
-.fmlcap{font-size:.92rem;color:var(--muted);text-align:center;margin-top:.8rem}
+.fmlcap{font-size:1.15rem;color:var(--muted);text-align:center;margin-top:.8rem}
 
 /* ============ lecture-slides 增量：演讲者备注 ============ */
 /* 备注块在放映/阅读两种模式下都不出现在画面里 */
