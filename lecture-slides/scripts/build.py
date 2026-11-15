@@ -217,9 +217,9 @@ def render_math(items):
         return {}
     node = shutil.which("node")
     if not node:
-        sys.exit("[build] 源稿里有 ::: fml 公式块，但环境里没有 node。\n"
-                 "        公式在构建期渲染，需要 node 22+；装好再跑，\n"
-                 "        或把公式改成图片 / 手写 HTML。")
+        sys.exit("[build] 源稿里有公式（::: fml 或 \\(...\\)），但环境里没有 node。\n"
+                 "        公式在构建期用 KaTeX 排版，需要 node 22+（https://nodejs.org）；装好再跑。\n"
+                 "        暂时装不了，就先把公式换成图片，不要手拼 <sub><sup>。")
     if not KATEX_CSS.exists():
         sys.exit("[build] 缺少 %s" % KATEX_CSS)
     payload = [{"tex": t, "display": d} for t, d in uniq]
