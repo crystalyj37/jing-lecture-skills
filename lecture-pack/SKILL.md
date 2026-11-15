@@ -1,6 +1,6 @@
 ---
 name: lecture-pack
-description: "把同一个议题/课程/分享写成两到三份互相咬合的文件：① 可分享给听众或学生的详细材料（长文或网页）；② 可放映的 HTML slides；③ 讲者自己的讲稿（口播句 + 时间 + 现场提示）。适用于要上台讲、同时又要把内容留给听众的场合（讲座、公开课、答辩、培训）。当用户说「一份内容出两版/三版」「同时要讲稿和材料」「讲座材料整理成可分享的」时使用。产出经 crosscheck 对账，保证三份的单元、顺序、数字一致。slides 部分交给 lecture-slides 构建。不适用于只做 slides（用 lecture-slides）、只做 Word/PPT 单件（用 workbuddy-docx / workbuddy-pptx）。四份源稿齐了用 scripts/pack.py 一条命令出全套并对账。关键词：一份内容三版、讲稿+材料+slides、讲座材料、讲义、课件配讲稿、handout、speaker script、lecture pack、三产物同步。"
+description: "把同一个议题/课程/分享写成两到三份互相咬合的文件：① 可分享给听众或学生的详细材料（长文或网页）；② 可放映的 HTML slides；③ 讲者自己的讲稿（口播句 + 时间 + 现场提示）。适用于要上台讲、同时又要把内容留给听众的场合（讲座、公开课、答辩、培训）。当用户说「一份内容出两版/三版」「同时要讲稿和材料」「讲座材料整理成可分享的」时使用。产出经 crosscheck 对账，保证三份的单元、顺序、数字一致。slides 部分交给 lecture-slides 构建。不适用于只做 slides（用 lecture-slides）、只做 Word/PPT 单件（用 workbuddy-docx / workbuddy-pptx）。四份源稿齐了用 scripts/pack.py 一条命令出全套并对账；材料与讲稿可写 LaTeX 公式，slides 可选出 PDF。关键词：一份内容三版、讲稿+材料+slides、讲座材料、讲义、课件配讲稿、handout、speaker script、lecture pack、三产物同步。"
 agent_created: true
 ---
 
@@ -104,7 +104,10 @@ python3 <SKILL>/scripts/crosscheck.py content-map.md \
 python3 <SKILL>/../lecture-slides/scripts/build.py deck.deck.md -o deck.html
 ```
 
-出 PDF（材料与讲稿同一条命令，只是换文件）：
+材料和讲稿里可以写公式（`$$…$$` 独占一段、行内 `\(…\)`），构建期用 lecture-slides 的 KaTeX 排好；
+需要 node，没有就报错，或加 `--no-math` 保留原文（只管材料与讲稿；slides 里的公式仍要 node）。讲稿里公式能少则少，推导放材料。
+
+出 PDF（材料与讲稿同一条命令，只是换文件；也可以用 `../lecture-slides/scripts/pdf.py 文件.html`）：
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \

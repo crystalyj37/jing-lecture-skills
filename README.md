@@ -10,14 +10,14 @@
 
 | skill | 输入 | 输出 |
 |---|---|---|
-| [`lecture-slides`](lecture-slides/) | 一份 `.deck.md` | 单文件 HTML 演示页（分步揭示、演讲者备注、阅读模式，离线可开） |
+| [`lecture-slides`](lecture-slides/) | 一份 `.deck.md` | 单文件 HTML 演示页（分步揭示、演讲者备注与讲者窗口、阅读模式，离线可开；可选导出 PDF） |
 | [`lecture-pack`](lecture-pack/) | 一份内容清单 + 材料/讲稿 md | 三份产物，外加一次对账 |
 
 `lecture-pack` 负责内容怎么分、三份怎么对齐；`lecture-slides` 负责把幻灯片渲染出来。两者可以单独用，也可以连起来用。
 
 ## 效果
 
-**可投屏 slides**（单文件，按空格一行一行出，`S` 拉演讲者备注，`R` 进阅读模式）
+**可投屏 slides**（单文件，按空格一行一行出，`S` 拉演讲者备注，`P` 开讲者窗口，`R` 进阅读模式）
 
 ![slides 示例](docs/img/deck.png)
 
@@ -51,8 +51,8 @@ cp -R jing-lecture-skills/lecture-slides jing-lecture-skills/lecture-pack ~/.wor
 
 装到别的 agent 也一样，只要两个目录并排：Claude Code 放 `~/.claude/skills/`，Codex / Cursor 等读 `~/.agents/skills/`。
 
-只依赖 Python 3 标准库，没有 pip 包。**只有写公式时**构建会调用 node——LaTeX 在这一步被排成
-静态 HTML（见下文「公式与交互图」）。产物本身不依赖 node，仍是双击就开的单文件。
+只依赖 Python 3 标准库，没有 pip 包。**只有写公式时**构建会调用 node（slides、材料、讲稿都一样）——LaTeX 在这一步被排成
+静态 HTML（见下文「公式与交互图」）。产物本身不依赖 node，仍是双击就开的单文件。导出 PDF 另需本机 Chrome / Chromium / Edge。
 
 ## 用法
 
@@ -117,6 +117,9 @@ title: 示例 · 模型分几类
 </div>
 ```
 
+材料和讲稿里也能写公式：块公式 `$$…$$` 独占一段，行内 `\(…\)`，同一个渲染器，打印成 PDF 也是排好的
+（没有 node 时报错，或加 `--no-math` 保留原文）。
+
 片段见 [`layouts.md`](lecture-slides/references/layouts.md) 第 11、12 节。`assets/showcase.deck.md`
 是一份九屏的完整样张（统计直觉），可以直接 build 出来看效果。
 
@@ -160,6 +163,19 @@ slides 也能出 PDF（可选）：`python3 lecture-slides/scripts/pdf.py talk.h
 `--steps` 让分步屏一步一页；`pack.py --slides-pdf [steps]` 一并出。适合交主办方、归档、发群、
 打印批注——分步、滑块和图表切换、备注与快捷键都会丢，**现场讲课仍用 HTML**。
 
+## 可选功能：按需取用
+
+都是开关，不用就不影响原来的用法。
+
+| 功能 | 怎么开 | 什么时候用 | 边界 |
+|---|---|---|---|
+| slides 导出 PDF | `lecture-slides/scripts/pdf.py talk.html [--steps]`；或 `pack.py --slides-pdf [steps]` | 主办方要提前交 PDF、投稿/答辩附件、归档、发群、打印批注 | 每屏一页 16:9；分步默认取最终态，`--steps` 一步一页；滑块、图表切换定格在默认帧；备注与快捷键全丢。**讲课仍用 HTML** |
+| 讲者窗口 | 放映时按 `P` | 扩展屏：投影放演示窗口，笔记本上看当前屏、下一屏、备注、计时 | 两窗口翻页与黑屏双向同步；屏内滑块等交互不同步；弹窗被拦时要允许。镜像投屏时 `S` 面板观众也看得见，只能用扩展屏 + `P` |
+| 材料/讲稿公式 | 直接写 `$$…$$`、`\(…\)` | 讲义要有推导、定义式 | 需要 node；`--no-math` 原样保留；不认单个 `$…$`；无编号与交叉引用 |
+| 未知类名检查 | `audit.py` 默认开启，`--strict` 变 error | 屏内手写 HTML，防止 `tbl` 写成 `table` 之类的拼错 | 只判断「壳、配色表、KaTeX 与本屏 `<style>`/`<script>` 里有没有这个类」，判断不了用得对不对 |
+
+细节见 [`lecture-slides/SKILL.md`](lecture-slides/SKILL.md)「讲者窗口」「导出 PDF」、[`lecture-pack/README.md`](lecture-pack/README.md)「公式」。
+
 ## 设计取舍
 
 **内容和版式分开。** `.deck.md` 里只有内容和「这一屏是什么结构」的标记，版式全在 `assets/deck-shell.html`。改一处样式，所有 deck 同时变。
@@ -168,7 +184,7 @@ slides 也能出 PDF（可选）：`python3 lecture-slides/scripts/pdf.py talk.h
 
 **分步要自己写 CSS。** `data-step` 不是统一机制，各组件各写各的隐藏规则（`.tr`、`.chain .st`、`.four .c`……）。加新组件时必须同时写 `.x[data-step]{opacity:0}` 和 `.x[data-step].on{opacity:1}`，漏写不会报错，只是它一开始就显示。
 
-**不追求自动排版。** 每屏的内容密度是作者的事，工具只保证不溢出、不断行错乱、打印不出界。`audit.py` 查结构、版式、变量闭环与公式渲染，退出码非 0 不交付。
+**不追求自动排版。** 每屏的内容密度是作者的事，工具只保证不溢出、不断行错乱、打印不出界。`audit.py` 查结构、版式、变量闭环、公式渲染与未知类名，退出码非 0 不交付。
 
 **没有主题切换。** 只保留一套「墨水经典」。切换机制一旦存在，每次动颜色都要把 N 套 × 3 份产物重新验一遍，而实际不会用。
 
@@ -208,6 +224,7 @@ lecture-pack/
     script.py           讲稿 → A4 HTML
     theme.py            读配色表并注入
     crosscheck.py       三份对账
+    mathx.py            材料与讲稿里的公式（复用 slides 的渲染器）
     pack.py             一条命令跑完全流程
 
 brand/                  门面署名：头像、微标、名字、链接（改这里，别改页面）

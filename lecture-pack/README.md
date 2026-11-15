@@ -226,7 +226,7 @@ $$
 - **块公式**：`$$ … $$` 独占一段（可以跨行）；**行内**：`\( … \)`。写在句中的 `$$…$$` 和单个 `$…$` 都不认，
   原样输出——中文材料里 `$` 常是金额，不拿它当分隔符
 - 代码块里的不动；写错公式时构建直接报错，指出是哪一条
-- **没有 node**：和 slides 一样明确报错、退出码 1；加 `--no-math` 则原样保留公式源码，照常出页面
+- **没有 node**：和 slides 一样明确报错、退出码 1；加 `--no-math` 则原样保留公式源码，照常出页面。`pack.py --no-math` 只管材料与讲稿；slides 里有公式时仍要 node，没有降级开关
 - 有公式时页面会内嵌 KaTeX 样式与裁剪后的字体，体积从十几 KB 涨到约 280 KB（实测）；没写公式的材料不受影响，产物逐字节不变
 - 讲稿也支持，但台上念的是话，公式能少则少；要给听众看的推导放材料
 - 不支持：公式编号与交叉引用（`\label`/`\eqref`），要编号手写 `\tag{1}`
@@ -537,7 +537,7 @@ python3 ~/.workbuddy/skills/lecture-slides/scripts/build.py deck.deck.md -o /tmp
 python3 ~/.workbuddy/skills/lecture-slides/scripts/audit.py /tmp/d.html
 ```
 
-上面四步也可以一条命令跑完：`python3 ../../scripts/pack.py . -o /tmp/dist --total 6 --pdf`。
+上面四步也可以一条命令跑完：`python3 ../../scripts/pack.py . -o /tmp/dist --total 6 --pdf`；要连 slides 的 PDF 再加 `--slides-pdf`（实测 2 页，`--slides-pdf steps` 10 页）。
 
 打印两份 PDF 并体检（`pdftotext` 来自 poppler，macOS 可用 `brew install poppler`）：
 

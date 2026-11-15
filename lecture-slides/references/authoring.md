@@ -117,7 +117,9 @@ python3 scripts/audit.py 课程.html
 
 `audit.py` 退出码非 0 就不要交付。它查的是：屏 id 重复、steps 与 data-step 不自洽、
 表格列数不一致、`data-title` 为空、图片没内嵌、占位符没替换、标记没闭合、
-公式渲染失败或缺字体。
+公式渲染失败或缺字体、屏内用了壳里没有的类名（warn，`--strict` 时 error）。
+
+要交 PDF：`python3 scripts/pdf.py 课程.html`（每屏一页，`--steps` 一步一页），适用场景与边界见 SKILL.md「导出 PDF」。
 
 ## 放映键位
 

@@ -1,6 +1,6 @@
 ---
 name: lecture-slides
-description: "把一份讲稿做成可放映的单文件 HTML 演示页：流式排版、按空格分步出内容、演讲者备注（S 键）、阅读模式、单文件离线可开。适用于讲课/分享/答辩的 slides，尤其是单屏内容密度大、需要「讲的时候一行一行出、课后还能当材料读」的场景。当用户说「做个讲座 HTML」「把这门课做成 slides」「这页要能分步演示」「要演讲者备注」时使用；也用于修改已有的 .deck.md / 由本 skill 生成的 html。只做 slides；要同时出讲稿与详细材料，用 lecture-pack。不适用于 .pptx（转 workbuddy-pptx）、Bento 画布式演示（转 bento-slides）、资料库学习页（转 library）。也适合带 LaTeX 公式、可切换数据图的课件与学术报告。关键词：lecture-slides、讲座 HTML、讲课 slides、课件、组会/学术报告、单文件演示、分步揭示、演讲者备注、阅读模式、LaTeX 公式、HTML slides、speaker notes。"
+description: "把一份讲稿做成可放映的单文件 HTML 演示页：流式排版、按空格分步出内容、演讲者备注（S 键同屏面板，P 键独立讲者窗口）、阅读模式、单文件离线可开。适用于讲课/分享/答辩的 slides，尤其是单屏内容密度大、需要「讲的时候一行一行出、课后还能当材料读」的场景。当用户说「做个讲座 HTML」「把这门课做成 slides」「这页要能分步演示」「要演讲者备注」时使用；也用于修改已有的 .deck.md / 由本 skill 生成的 html。只做 slides；要同时出讲稿与详细材料，用 lecture-pack。不适用于 .pptx（转 workbuddy-pptx）、Bento 画布式演示（转 bento-slides）、资料库学习页（转 library）。也适合带 LaTeX 公式、可切换数据图的课件与学术报告；可选导出每屏一页的 PDF。关键词：lecture-slides、讲座 HTML、讲课 slides、课件、组会/学术报告、单文件演示、分步揭示、演讲者备注、阅读模式、LaTeX 公式、HTML slides、speaker notes、讲者窗口、presenter view、导出 PDF。"
 agent_created: true
 ---
 
@@ -11,7 +11,7 @@ agent_created: true
 ## 它解决什么
 
 讲课用的 slides 有两个互相打架的要求：**讲的时候要少**（一次只出一行，观众才有注意力），
-**课后要能读**（同一份东西，学生拿回去要能当材料看）。PPT 只能满足前者，PDF 两头都不占。
+**课后要能读**（同一份东西，学生拿回去要能当材料看）。PPT 只能满足前者，PDF 两头都不占（所以本 skill 的 PDF 导出只用来交付存档，见「导出 PDF」）。
 
 这套东西的答案是同一份内容两种形态：
 
