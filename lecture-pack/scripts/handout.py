@@ -37,7 +37,7 @@ CSS = """
 html{font-size:16px;-webkit-font-smoothing:antialiased}
 body{
   margin:0;padding:0;background:var(--gutter);color:var(--ink);
-  font-family:"Songti SC","Source Han Serif SC","Noto Serif SC","PingFang SC",
+  font-family:"Songti SC","STSong","Source Han Serif SC","Noto Serif SC","Noto Serif CJK SC","SimSun","PingFang SC",
     "Hiragino Sans GB","Microsoft YaHei",serif;
   line-height:1.92;
 }
