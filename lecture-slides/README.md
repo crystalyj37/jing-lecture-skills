@@ -171,6 +171,14 @@ el.classList.toggle('on', i<idx ? true : i>idx ? false : (+el.dataset.step <= st
 - **不能用 `N`**：`N` 在原键位里已经绑了「直接翻下一页」（`ArrowDown`/`Enter`/`N`）
 - `paint()` 末尾调 `spkPaint()`，面板开着时跟着翻页更新
 
+### 讲者窗口
+
+- 按 `P` → `window.open(同一文件?presenter=1)`；新窗口给 `<html>` 加 `.pv`，舞台缩到左侧 66%，右侧是 `#pv`
+- 两个窗口跑同一套状态机。`paint()` 末尾 `send()`：把 `{idx, step, black}` `postMessage` 给对方；
+  收到消息时置 `quiet`，避免回传成死循环。讲者窗口载入时发 `hello`，观众窗口回一份当前状态
+- 下一屏缩略图是 `cloneNode` 的那一屏（去掉 id、canvas 复制当前画面），按 `#pvNext` 宽度缩放
+- 用 `postMessage`：只要拿着对方的窗口引用就能通，不依赖 `file://` 下各浏览器怎么判定「同源」
+
 ### 阅读模式
 
 按 `R` 或地址加 `?mode=read`，切 `html.demo` ↔ `html.read`：
@@ -312,7 +320,7 @@ A4 两份由 `theme.py` 注入）。改完必须重新 build，壳不会自动�
 
 在 `deck-shell.html` 的 `keydown` 里加分支，注意避开已占用的：
 
-`空格 → ← PageUp PageDown ↑ ↓ N Enter Home End B T G R F S ? H Esc`
+`空格 → ← PageUp PageDown ↑ ↓ N Enter Home End B T G R F S P ? H Esc`
 
 ### 加构建期变量
 

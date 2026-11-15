@@ -874,6 +874,29 @@ html.read .qrcard{max-width:420px;margin:0 auto}
 #spkNext{margin-top:auto;border-top:1px solid #342c24;padding-top:14px;font-size:14px;color:#90846f}
 html.read #spk{display:none!important}
 
+/* ============ 讲者窗口（P 键打开第二个窗口；仪器色，恒为暗色） ============ */
+#pv{display:none}
+html.pv{background:#15120f}
+html.pv .bar,html.pv .progress,html.pv #nav,html.pv #spk,html.pv .black,html.pv .clock{display:none!important}
+html.pv #pv{display:block;position:fixed;inset:0;z-index:70;pointer-events:none;color:#ece5d9;
+  font-family:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC",system-ui,sans-serif}
+#pvTop{position:absolute;left:24px;right:24px;top:0;height:60px;display:flex;align-items:center;gap:22px;font-size:17px;color:#b9ad99}
+#pvTop b{font-size:30px;color:#f0e9dd;font-variant-numeric:tabular-nums}
+#pvTop .bo{color:#f0a48f}
+#pvReset{pointer-events:auto;margin-left:auto;border:0;border-radius:6px;background:rgba(255,255,255,.1);color:#e6ddd0;
+  font-size:14px;padding:6px 12px;cursor:pointer}
+#pvSide{position:absolute;right:24px;top:70px;bottom:20px;width:34vw;display:flex;flex-direction:column;gap:12px}
+#pvSide h4{margin:0;font-size:13px;letter-spacing:.12em;color:#90846f;font-weight:600}
+#pvNext{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--paper);color:var(--ink);outline:1px solid #342c24;flex:none}
+#pvNext .screen{opacity:1;width:1920px;height:1080px;transform-origin:top left;transition:none}
+#pvNext .screen [data-step]{opacity:1!important;transform:none!important}
+#pvEnd{display:flex;align-items:center;justify-content:center;height:100%;color:#90846f;background:#1f1b17;font-size:18px}
+#pvNotes{flex:1;min-height:0;overflow:auto;pointer-events:auto;font-size:21px;line-height:1.85;color:#ece5d9}
+#pvNotes p{margin:0 0 .7em}
+#pvNotes b{color:#f0a48f}
+#pvNotes .sk-empty{color:#8a7f6e;font-size:16px}
+@media print{#pv{display:none!important}}
+
 /* ============ 导出 PDF：每屏一页 16:9（scripts/pdf.py 或浏览器打印） ============ */
 /* 默认导出每屏的最终态；地址加 ?print=steps 时每一步单独一页。交互图停在默认那一帧。 */
 @page slide{size:1920px 1080px;margin:0}
@@ -908,6 +931,7 @@ html.read #spk{display:none!important}
     <button type="button" data-k="t" title="计时（T）">计时<b>T</b></button>
     <button type="button" data-k="g" title="目录（G）">目录<b>G</b></button>
     <button type="button" data-k="r" title="阅读模式（R）">阅读<b>R</b></button>
+    <button type="button" data-k="p" title="讲者窗口（P）">讲者<b>P</b></button>
     <span class="sep"></span>
     <button type="button" data-k="f" title="全屏（F）">全屏<b>F</b></button>
     <button type="button" data-k="?" title="帮助（?）">帮助<b>?</b></button>
@@ -935,6 +959,8 @@ html.read #spk{display:none!important}
     <div><kbd>T</kbd> 计时开 / 关</div>
     <div><kbd>G</kbd> 目录</div>
     <div><kbd>R</kbd> 阅读模式 / 演示模式</div>
+    <div><kbd>S</kbd> 备注面板（同一块屏）</div>
+    <div><kbd>P</kbd> 讲者窗口（拖到自己的屏上）</div>
     <div><kbd>F</kbd> 全屏</div>
     <div><kbd>Esc</kbd> 关闭浮层</div>
   </div>
@@ -955,6 +981,12 @@ html.read #spk{display:none!important}
   <div id="spkMeta"><span id="spkTime">无分步</span></div>
   <div id="spkBody"></div>
   <div id="spkNext"></div>
+</div>
+
+<div id="pv" aria-hidden="true">
+  <div id="pvTop"><b id="pvPos"></b><span id="pvStep"></span><span>已用 <b id="pvElapsed">00:00</b></span><span id="pvClock"></span><span id="pvBlack"></span>
+    <button type="button" id="pvReset">计时归零</button></div>
+  <div id="pvSide"><h4>下 一 屏</h4><div id="pvNext"></div><h4>备 注</h4><div id="pvNotes"></div></div>
 </div>
 
 <script>
@@ -1000,7 +1032,7 @@ html.read #spk{display:none!important}
       var n2=nsteps(screens[idx]);
       barL.textContent=pad(idx+1)+' / '+pad(screens.length)+' · '+screens[idx].dataset.title+((n2&&step>0)?('　｜　第 '+step+' / '+n2+' 步'):'');
     }
-    spkPaint();
+    spkPaint(); pvPaint(); send();
   }
 
   function next(){
@@ -1029,6 +1061,8 @@ html.read #spk{display:none!important}
 
   // 阅读模式
   var doc=document.documentElement;
+  var isPV=/[?&]presenter/.test(location.search), peer=isPV?window.opener:null, quiet=false;
+  if(isPV) doc.classList.add('pv');
   function setMode(read){
     doc.classList.toggle('read',read);
     doc.classList.toggle('demo',!read);
@@ -1040,10 +1074,15 @@ html.read #spk{display:none!important}
       history.replaceState(null,'',u.toString());
     }catch(e){}
   }
-  if(/[?&]mode=read/.test(location.search)) setMode(true);
+  if(/[?&]mode=read/.test(location.search)&&!isPV) setMode(true);
 
   function fit(){
     if(doc.classList.contains('read')) return;
+    if(isPV){
+      var w=innerWidth*0.66-48, ps=Math.min(w/1920,(innerHeight-90)/1080);
+      stage.style.transform='scale('+ps+')'; stage.style.left='24px'; stage.style.top='70px';
+      pvPaint(); return;
+    }
     var s=Math.min(innerWidth/1920, innerHeight/1080);
     stage.style.transform='scale('+s+')';
     stage.style.left=((innerWidth-1920*s)/2)+'px';
@@ -1055,10 +1094,12 @@ html.read #spk{display:none!important}
   var black=document.getElementById('black');
   var clock=document.getElementById('clock');
   var t0=null, timer=null;
-  function toggleBlack(){
-    var on = black.classList.toggle('on');
+  function setBlack(on){
+    black.classList.toggle('on', on);
     document.documentElement.classList.toggle('bo', on);
+    pvPaint(); send();
   }
+  function toggleBlack(){ setBlack(!black.classList.contains('on')); }
   black.addEventListener('click',function(){
     black.classList.remove('on');
     document.documentElement.classList.remove('bo');
@@ -1099,7 +1140,7 @@ html.read #spk{display:none!important}
   });
   document.addEventListener('click',function(e){
     var tg=e.target;
-    if(tg&&tg.closest&&tg.closest('.card,.layer,a,button,#nav,.toc,.overlay,.clock')) return;
+    if(tg&&tg.closest&&tg.closest('.card,.layer,a,button,#nav,.toc,.overlay,.clock,#pv')) return;
     var x=e.clientX/innerWidth;
     if(x>.72) next(); else if(x<.28) prev();
   },true);
@@ -1182,6 +1223,8 @@ html.read #spk{display:none!important}
     if(k==='b'||k==='B'){ toggleBlack(); return; }
     if(k==='t'||k==='T'){ toggleClock(); return; }
     if(k==='g'||k==='G'){ outline.classList.toggle('on'); help.classList.remove('on'); return; }
+    if(k==='p'||k==='P'){ if(!isPV) openPV(); return; }
+    if(isPV&&/^[rRsS]$/.test(k)) return;
     if(k==='r'||k==='R'){ setMode(!doc.classList.contains('read')); return; }
     if(k==='f'||k==='F'){
       if(!document.fullscreenElement) document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
@@ -1234,6 +1277,56 @@ html.read #spk{display:none!important}
   if(spk) spk.addEventListener('click',function(e){
     if(e.target.id==='spkClose') spk.classList.remove('on');
   });
+
+  // ================= 讲者窗口（P）=================
+  // 同一个文件以 ?presenter 打开第二个窗口：左边当前屏，右边下一屏 + 备注 + 计时。
+  // 两个窗口各自跑同一套状态机，任何一边翻页都用 postMessage 把 {idx,step,黑屏} 发给另一边。
+  var pvWin=null, pv0=Date.now();
+  function send(){
+    if(quiet||!peer||peer.closed) return;
+    try{ peer.postMessage({lsDeck:1,idx:idx,step:step,black:black.classList.contains('on')},'*'); }catch(e){}
+  }
+  window.addEventListener('message',function(e){
+    var d=e.data; if(!d||!d.lsDeck) return;
+    if(d.hello){ peer=e.source; send(); return; }
+    quiet=true; idx=Math.min(d.idx,screens.length-1); step=d.step; state[idx]=step;
+    setBlack(!!d.black); paint(); quiet=false;
+  });
+  function openPV(){
+    if(pvWin&&!pvWin.closed){ pvWin.focus(); return; }
+    var u=new URL(location.href); u.searchParams.delete('mode'); u.searchParams.set('presenter','1'); u.hash='';
+    pvWin=window.open(u.toString(),'lecture-presenter','width=1280,height=760');
+    if(pvWin) peer=pvWin;
+  }
+  function pad2(n){return (n<10?'0':'')+n;}
+  function pvTick(){
+    if(!isPV) return;
+    var t=Math.floor((Date.now()-pv0)/1000), d=new Date();
+    document.getElementById('pvElapsed').textContent=pad2(Math.floor(t/60))+':'+pad2(t%60);
+    document.getElementById('pvClock').textContent='现在 '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+  }
+  function pvPaint(){
+    if(!isPV) return;
+    var s=screens[idx]; if(!s) return;
+    var n=nsteps(s);
+    document.getElementById('pvPos').textContent=pad2(idx+1)+' / '+pad2(screens.length)+' · '+(s.dataset.title||'');
+    document.getElementById('pvStep').textContent=n?('第 '+step+' / '+n+' 步'):'无分步';
+    document.getElementById('pvBlack').textContent=black.classList.contains('on')?'● 观众端黑屏中':'';
+    document.getElementById('pvBlack').className=black.classList.contains('on')?'bo':'';
+    var box=s.querySelector('.spk');
+    document.getElementById('pvNotes').innerHTML=box?box.innerHTML:'<p class="sk-empty">本屏未写备注</p>';
+    var nb=document.getElementById('pvNext'), nx=screens[idx+1];
+    nb.innerHTML='';
+    if(!nx){ nb.innerHTML='<div id="pvEnd">已是最后一屏</div>'; return; }
+    var c=nx.cloneNode(true), cv=nx.querySelectorAll('canvas');
+    [].forEach.call(c.querySelectorAll('[id]'),function(x){x.removeAttribute('id');});
+    c.removeAttribute('id'); c.classList.add('active');
+    nb.appendChild(c);
+    [].forEach.call(c.querySelectorAll('canvas'),function(x,j){ try{x.getContext('2d').drawImage(cv[j],0,0);}catch(e){} });
+    c.style.transform='scale('+(nb.clientWidth/1920)+')';
+  }
+  document.getElementById('pvReset').addEventListener('click',function(){ pv0=Date.now(); pvTick(); });
+  if(isPV){ setInterval(pvTick,1000); pvTick(); if(peer) try{ peer.postMessage({lsDeck:1,hello:1},'*'); }catch(e){} }
 
   fit(); paint();
 })();
